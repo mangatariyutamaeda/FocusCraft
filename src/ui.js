@@ -42,3 +42,13 @@ export const createTaskElement = (task, id, handlers) => {
 
     return li;
 };
+
+export const renderViewList = (viewListElement, views, onViewClick) => {
+    viewListElement.innerHTML = ''; // リストをリセット
+    for (const viewName in views) {
+        const viewButton = document.createElement('button');
+        viewButton.textContent = viewName; // ビュー名を表示
+        viewButton.addEventListener('click', () => onViewClick(views[viewName]));
+        viewListElement.appendChild(viewButton);
+    }
+};
