@@ -20,12 +20,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const todoInput = document.getElementById('focuscraft-input');
     const addBtn = document.getElementById('add-btn');
     const todoList = document.getElementById('focuscraft-list');
+    const searchBox = document.getElementById('search-box');
+    const tagList = document.getElementById('tag-list');
+    const saveViewBtn = document.getElementById('save-view-btn');
     let currentInProgressId = null; // 現在「実施中」のタスクID
+    const selectedTags = new Set();
 
     // タスクをデータベースに追加
-    const addTodo = (todoText) => {
+    const addTodo = (todoText, tags = []) => {
         const newTodoRef = push(ref(database, 'todos'));
-        set(newTodoRef, { text: todoText, completed: false, inProgress: false });
+        set(newTodoRef, { text: todoText, completed: false, inProgress: false, tags });
     };
 
     // データベースからタスクを取得して表示
@@ -37,6 +41,40 @@ document.addEventListener('DOMContentLoaded', () => {
             if (todos) {
                 for (const id in todos) {
                     addTodoToList(id, todos[id]);
+                }
+            }
+        });
+    };
+
+    // タスクをフィルタリングする（検索用）
+    const filterTasks = (query) => {
+        onValue(ref(database, 'todos'), (snapshot) => {
+            const todos = snapshot.val();
+            todoList.innerHTML = ''; // リストをリセット
+
+            if (todos) {
+                for (const id in todos) {
+                    const task = todos[id];
+                    if (task.text.toLowerCase().includes(query)) {
+                        addTodoToList(id, task);
+                    }
+                }
+            }
+        });
+    };
+
+    // タグでタスクをフィルタリング
+    const filterByTags = (tags) => {
+        onValue(ref(database, 'todos'), (snapshot) => {
+            const todos = snapshot.val();
+            todoList.innerHTML = '';
+
+            if (todos) {
+                for (const id in todos) {
+                    const task = todos[id];
+                    if (tags.some(tag => task.tags && task.tags.includes(tag))) {
+                        addTodoToList(id, task);
+                    }
                 }
             }
         });
@@ -81,8 +119,59 @@ document.addEventListener('DOMContentLoaded', () => {
         todoList.appendChild(li);
     };
 
+    // タグを取得して表示
+    onValue(ref(database, 'tags'), (snapshot) => {
+        const tags = snapshot.val();
+        tagList.innerHTML = '';
+
+        if (tags) {
+            for (const tag in tags) {
+                const tagBtn = document.createElement('button');
+                tagBtn.textContent = tag;
+                tagBtn.addEventListener('click', () => {
+                    if (selectedTags.has(tag)) {
+                        selectedTags.delete(tag);
+                    } else {
+                        selectedTags.add(tag);
+                    }
+                    filterByTags([...selectedTags]);
+                });
+                tagList.appendChild(tagBtn);
+            }
+        }
+    });
+
+    // ビューを保存
+    saveViewBtn.addEventListener('click', () => {
+        const query = searchBox.value.trim().toLowerCase();
+        const viewName = prompt('Enter a name for this view:');
+
+        if (viewName) {
+            const filteredTasks = [];
+            onValue(ref(database, 'todos'), (snapshot) => {
+                const todos = snapshot.val();
+                for (const id in todos) {
+                    if (todos[id].text.toLowerCase().includes(query)) {
+                        filteredTasks.push({ id, ...todos[id] });
+                    }
+                }
+
+                // ビューを保存
+                set(ref(database, `views/${viewName}`), filteredTasks)
+                    .then(() => alert('View saved successfully!'))
+                    .catch((error) => console.error('Error saving view:', error));
+            }, { onlyOnce: true });
+        }
+    });
+
     // 初期化
     loadTodos();
+
+    // 検索イベントを設定
+    searchBox.addEventListener('input', () => {
+        const query = searchBox.value.trim().toLowerCase();
+        filterTasks(query);
+    });
 
     // ボタンクリックでタスクを追加
     addBtn.addEventListener('click', () => {
@@ -95,39 +184,4 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Task cannot be empty!');
         }
     });
-document.addEventListener('DOMContentLoaded', () => {
-    const searchBox = document.getElementById('search-box');
-    const todoList = document.getElementById('focuscraft-list');
-
-    // 検索イベントを設定
-    searchBox.addEventListener('input', () => {
-        const query = searchBox.value.trim().toLowerCase();
-        filterTasks(query);
-    });
-
-    // タスクをフィルタリングする
-    const filterTasks = (query) => {
-        onValue(ref(database, 'todos'), (snapshot) => {
-            const todos = snapshot.val();
-            todoList.innerHTML = ''; // リストをリセット
-
-            if (todos) {
-                for (const id in todos) {
-                    const task = todos[id];
-                    if (task.text.toLowerCase().includes(query)) {
-                        addTodoToList(id, task);
-                    }
-                }
-            }
-        });
-    };
-
-    // タスクをリストに表示
-    const addTodoToList = (id, todo) => {
-        const li = document.createElement('li');
-        li.textContent = todo.text;
-        todoList.appendChild(li);
-    };
-});
-
 });
