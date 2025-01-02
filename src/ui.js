@@ -7,6 +7,36 @@ export const renderTaskList = (todoList, tasks, addTodoToList) => {
     }
 };
 
+export const renderTaskList = (todoList, tasks, addTodoToList) => {
+    todoList.innerHTML = '';
+
+    // ヘッダーの作成
+    const header = document.createElement('div');
+    header.classList.add('task-header');
+    header.style.display = 'flex';
+    header.style.justifyContent = 'space-between';
+    header.style.fontWeight = 'bold';
+    header.style.padding = '10px';
+    header.style.borderBottom = '1px solid #ccc';
+
+    header.innerHTML = `
+        <div style="flex: 2; text-align: center;">タスク名</div>
+        <div style="flex: 1; text-align: center;">完了状況</div>
+        <div style="flex: 1; text-align: center;">現在実施中のタスク</div>
+        <div style="flex: 1; text-align: center;">タスクの削除</div>
+    `;
+
+    todoList.appendChild(header);
+
+    // タスクの追加
+    if (tasks) {
+        for (const id in tasks) {
+            addTodoToList(id, tasks[id]);
+        }
+    }
+};
+
+
 export const createTaskElement = (task, id, handlers) => {
     const { onComplete, onInProgress, onDelete } = handlers;
 
