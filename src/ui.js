@@ -4,6 +4,12 @@ export const renderTaskList = (todoList, tasks, addTodoToList) => {
     // ヘッダーの作成
     const header = document.createElement('div');
     header.classList.add('task-header');
+    header.style.display = 'flex';
+    header.style.justifyContent = 'space-between';
+    header.style.fontWeight = 'bold';
+    header.style.padding = '10px';
+    header.style.borderBottom = '1px solid #ccc';
+
     header.innerHTML = `
         <div style="flex: 2; text-align: center;">タスク名</div>
         <div style="flex: 1; text-align: center;">完了状況</div>
@@ -16,18 +22,19 @@ export const renderTaskList = (todoList, tasks, addTodoToList) => {
     // タスクの追加
     if (tasks) {
         for (const id in tasks) {
-            addTodoToList(id, tasks[id]);
+            const taskDiv = document.createElement('div');
+            taskDiv.classList.add('task-item');
+            addTodoToList(id, tasks[id], taskDiv);
+            todoList.appendChild(taskDiv);
         }
     }
 };
-
-
 
 export const createTaskElement = (task, id, handlers) => {
     const { onComplete, onInProgress, onDelete } = handlers;
 
     const li = document.createElement('div');
-    li.classList.add('task-item'); // クラスを追加
+    li.classList.add('task-item');
 
     const taskName = document.createElement('span');
     taskName.style.flex = '2';
