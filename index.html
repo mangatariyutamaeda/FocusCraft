@@ -32,6 +32,9 @@
 </head>
 <body>
     <h1>FocusCraft</h1>
+    <div class="search-container">
+        <input type="text" id="search-box" placeholder="Search tasks...">
+    </div>
     <div class="focuscraft-container">
         <input type="text" id="focuscraft-input" placeholder="Enter a new task" oninput="this.setCustomValidity('')" oninvalid="this.setCustomValidity('Task cannot be empty')" required>
         <button id="add-btn">Add</button>
