@@ -102,7 +102,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const searchText = event.target.value.toLowerCase();
         filterTasks(searchText);
     });
+    
+    const filterTasks = (searchText) => {
+        const tasks = [...todoList.childNodes]; // 現在のタスクリストの子要素を取得
+    
+        tasks.forEach((task) => {
+            const taskNameElement = task.querySelector('span');
+            if (taskNameElement) {
+                const taskName = taskNameElement.textContent.toLowerCase();
+                // タスク名に検索テキストが含まれているかを判定
+                if (taskName.includes(searchText)) {
+                    task.style.display = 'flex'; // 表示
+                } else {
+                    task.style.display = 'none'; // 非表示
+                }
+            }
+        });
+    };
 
+    
     initializeApp();
 });
 
