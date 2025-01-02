@@ -5,41 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FocusCraft</title>
     <link rel="stylesheet" href="style.css">
-    <script type="module">
-      // Import only the Firebase modules you need
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-      import { getDatabase } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
-
-      // Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyAgW5Aqqnx8nN6-7hAOFhQO8K2-UTRYDd8",
-        authDomain: "focuscraft-9693e.firebaseapp.com",
-        databaseURL: "https://focuscraft-9693e-default-rtdb.firebaseio.com",
-        projectId: "focuscraft-9693e",
-        storageBucket: "focuscraft-9693e.firebasestorage.app",
-        messagingSenderId: "393976628205",
-        appId: "1:393976628205:web:18db41e35ed2a2bc381de4",
-        measurementId: "G-4YRYKM6D11"
-      };
-
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-      const database = getDatabase(app);
-
-      // Export Firebase modules
-      export { app, database };
-    </script>
+    <script type="module" src="script.js"></script>
 </head>
 <body>
     <h1>FocusCraft</h1>
-    <div class="search-container">
-        <input type="text" id="search-box" placeholder="Search tasks...">
+    <div class="main-container">
+        <!-- 左側のタグ一覧 -->
+        <div class="tag-container">
+            <h3>Tags</h3>
+            <div id="tag-list"></div>
+        </div>
+
+        <!-- 中央のタスク管理エリア -->
+        <div class="task-container">
+            <!-- 検索ボックス -->
+            <div class="search-container">
+                <input type="text" id="search-box" placeholder="Search tasks...">
+            </div>
+
+            <!-- ビュー保存ボタン -->
+            <div class="view-container">
+                <button id="save-view-btn">Save Current View</button>
+            </div>
+
+            <!-- タスク入力フィールド -->
+            <div class="input-container">
+                <input type="text" id="focuscraft-input" placeholder="Enter a new task">
+                <button id="add-btn">Add</button>
+            </div>
+
+            <!-- タスクリスト -->
+            <ul id="focuscraft-list"></ul>
+        </div>
     </div>
-    <div class="focuscraft-container">
-        <input type="text" id="focuscraft-input" placeholder="Enter a new task" oninput="this.setCustomValidity('')" oninvalid="this.setCustomValidity('Task cannot be empty')" required>
-        <button id="add-btn">Add</button>
-        <ul id="focuscraft-list"></ul>
-    </div>
-    <script type="module" src="script.js"></script>
 </body>
 </html>
