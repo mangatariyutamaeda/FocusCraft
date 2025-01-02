@@ -7,8 +7,14 @@ export const saveView = (viewName, tasks) => {
 
 // ビューを取得してリスト表示
 export const loadViews = (callback) => {
+    if (typeof callback !== 'function') {
+        console.error('Invalid callback passed to loadViews:', callback);
+        return;
+    }
+
     onValue(ref(database, 'views'), (snapshot) => {
         const views = snapshot.val();
         callback(views);
     });
 };
+
