@@ -37,12 +37,15 @@ export const createTaskElement = (task, id, handlers) => {
     li.classList.add('task-item');
 
     const taskName = document.createElement('span');
-    taskName.style.flex = '2';
     taskName.textContent = task.text;
 
     if (task.completed) {
         taskName.style.textDecoration = 'line-through';
     }
+
+    // ボタン用のコンテナ
+    const actions = document.createElement('div');
+    actions.classList.add('task-actions');
 
     const completeBtn = document.createElement('button');
     completeBtn.textContent = task.completed ? '未完了に戻す' : '完了';
@@ -56,13 +59,16 @@ export const createTaskElement = (task, id, handlers) => {
     deleteBtn.textContent = '削除';
     deleteBtn.addEventListener('click', () => onDelete(id));
 
+    actions.appendChild(completeBtn);
+    actions.appendChild(inProgressBtn);
+    actions.appendChild(deleteBtn);
+
     li.appendChild(taskName);
-    li.appendChild(completeBtn);
-    li.appendChild(inProgressBtn);
-    li.appendChild(deleteBtn);
+    li.appendChild(actions);
 
     return li;
 };
+
 
 export const renderViewList = (viewListElement, views, onViewClick) => {
     viewListElement.innerHTML = ''; // リストをリセット
