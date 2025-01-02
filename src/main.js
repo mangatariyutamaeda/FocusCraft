@@ -30,17 +30,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const taskElement = createTaskElement(task, id, {
             onComplete: (id) => updateTodoStatus(id, { completed: !task.completed }),
             onInProgress: (id) => {
-                if (!task.inProgress && currentInProgressId) {
+                if (id === currentInProgressId) {
                     updateTodoStatus(currentInProgressId, { inProgress: false });
+                } else if (currentInProgressId) {
+                    updateTodoStatus(currentInProgressId, { inProgress: false });
+                    updateTodoStatus(id, { inProgress: true });
                 }
-                updateTodoStatus(id, { inProgress: !task.inProgress });
-                currentInProgressId = !task.inProgress ? id : null;
+                currentInProgressId = id;
             },
-            onDelete: (id) => deleteTodo(id),
+            onDelete: (id) => {
+                if (id === currentInProgressId) {
+                    currentInProgressId = null; // 実施中のタスクをリセット
+                }
+                deleteTodo(id);
+            },
         });
-
+    
         todoList.appendChild(taskElement);
     };
+
 
     addBtn.addEventListener('click', () => {
         const todoText = todoInput.value.trim();
