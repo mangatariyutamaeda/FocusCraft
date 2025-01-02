@@ -95,4 +95,39 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Task cannot be empty!');
         }
     });
+document.addEventListener('DOMContentLoaded', () => {
+    const searchBox = document.getElementById('search-box');
+    const todoList = document.getElementById('focuscraft-list');
+
+    // 検索イベントを設定
+    searchBox.addEventListener('input', () => {
+        const query = searchBox.value.trim().toLowerCase();
+        filterTasks(query);
+    });
+
+    // タスクをフィルタリングする
+    const filterTasks = (query) => {
+        onValue(ref(database, 'todos'), (snapshot) => {
+            const todos = snapshot.val();
+            todoList.innerHTML = ''; // リストをリセット
+
+            if (todos) {
+                for (const id in todos) {
+                    const task = todos[id];
+                    if (task.text.toLowerCase().includes(query)) {
+                        addTodoToList(id, task);
+                    }
+                }
+            }
+        });
+    };
+
+    // タスクをリストに表示
+    const addTodoToList = (id, todo) => {
+        const li = document.createElement('li');
+        li.textContent = todo.text;
+        todoList.appendChild(li);
+    };
+});
+
 });
