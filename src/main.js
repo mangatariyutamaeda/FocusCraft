@@ -26,28 +26,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    let currentInProgressId = null;
+    
     const addTodoToList = (id, task) => {
         const taskElement = createTaskElement(task, id, {
             onComplete: (id) => updateTodoStatus(id, { completed: !task.completed }),
             onInProgress: (id) => {
-                if (id === currentInProgressId) {
-                    updateTodoStatus(currentInProgressId, { inProgress: false });
-                } else if (currentInProgressId) {
-                    updateTodoStatus(currentInProgressId, { inProgress: false });
-                    updateTodoStatus(id, { inProgress: true });
+                // 現在の「実施中」をリセット
+                if (currentInProgressId) {
+                    const previousTask = document.querySelector(`[data-id="${currentInProgressId}"]`);
+                    if (previousTask) {
+                        const btn = previousTask.querySelector('.in-progress-btn');
+                        btn.textContent = '実施中に設定';
+                    }
                 }
+    
+                // 新しい「実施中」を設定
                 currentInProgressId = id;
+                const currentTask = document.querySelector(`[data-id="${id}"]`);
+                if (currentTask) {
+                    const btn = currentTask.querySelector('.in-progress-btn');
+                    btn.textContent = '実施中';
+                }
             },
             onDelete: (id) => {
                 if (id === currentInProgressId) {
-                    currentInProgressId = null; // 実施中のタスクをリセット
+                    currentInProgressId = null; // 実施中をリセット
                 }
                 deleteTodo(id);
             },
         });
     
+        taskElement.setAttribute('data-id', id); // タスクの要素にIDを設定
         todoList.appendChild(taskElement);
     };
+
 
 
 
@@ -76,3 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initializeApp();
 });
+
+
+
+
