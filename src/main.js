@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const todoList = document.getElementById('focuscraft-list');
     const saveViewBtn = document.getElementById('save-view-btn');
     const viewList = document.getElementById('view-list');
+    const searchBox = document.getElementById('search-box');
+
     let currentInProgressId = null;
 
     const initializeApp = () => {
@@ -90,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
         
-    const searchBox = document.getElementById('search-box');
     
     // 絞り込みロジックの実装
     const filterTasks = (searchText) => {
@@ -108,6 +109,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+    };
+
+
+    const renderViewList = (viewListElement, views, onViewClick) => {
+        viewListElement.innerHTML = ''; // リストをリセット
+    
+        for (const viewName in views) {
+            const viewButton = document.createElement('button');
+            viewButton.textContent = viewName;
+    
+            // ビューをクリックしたときの動作
+            viewButton.addEventListener('click', () => {
+                const viewData = views[viewName];
+                if (viewData && viewData.searchQuery) {
+                    searchBox.value = viewData.searchQuery; // 検索ボックスに反映
+                    filterTasks(viewData.searchQuery);     // 検索条件で絞り込み
+                }
+            });
+    
+            viewListElement.appendChild(viewButton);
+        }
     };
     
     // イベントリスナーを設定
