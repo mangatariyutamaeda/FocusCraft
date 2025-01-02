@@ -28,25 +28,28 @@ export const createTaskElement = (task, id, handlers) => {
 
     const li = document.createElement('div');
     li.classList.add('task-item');
+    li.setAttribute('data-id', id); // タスクの要素にIDを設定
 
-    const taskName = document.createElement('div');
+    const taskName = document.createElement('span');
+    taskName.style.flex = '2';
     taskName.textContent = task.text;
 
     if (task.completed) {
         taskName.style.textDecoration = 'line-through';
     }
 
-    const completeBtn = document.createElement('div');
-    completeBtn.innerHTML = `<button>${task.completed ? '未完了に戻す' : '完了'}</button>`;
-    completeBtn.querySelector('button').addEventListener('click', () => onComplete(id));
+    const completeBtn = document.createElement('button');
+    completeBtn.textContent = task.completed ? '未完了に戻す' : '完了';
+    completeBtn.addEventListener('click', () => onComplete(id));
 
-    const inProgressBtn = document.createElement('div');
-    inProgressBtn.innerHTML = `<button>${task.inProgress ? '実施中' : '実施中に設定'}</button>`;
-    inProgressBtn.querySelector('button').addEventListener('click', () => onInProgress(id));
+    const inProgressBtn = document.createElement('button');
+    inProgressBtn.classList.add('in-progress-btn');
+    inProgressBtn.textContent = '実施中に設定';
+    inProgressBtn.addEventListener('click', () => onInProgress(id));
 
-    const deleteBtn = document.createElement('div');
-    deleteBtn.innerHTML = `<button>削除</button>`;
-    deleteBtn.querySelector('button').addEventListener('click', () => onDelete(id));
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = '削除';
+    deleteBtn.addEventListener('click', () => onDelete(id));
 
     li.appendChild(taskName);
     li.appendChild(completeBtn);
@@ -55,6 +58,7 @@ export const createTaskElement = (task, id, handlers) => {
 
     return li;
 };
+
 
 
 export const renderViewList = (viewListElement, views, onViewClick) => {
