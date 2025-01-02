@@ -95,7 +95,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const viewName = tasks.map((task) => task.text).join(', ') || 'すべてのタスク';
         saveView(viewName, tasks).then(() => loadViews());
     });
-
+        
+    const searchBox = document.getElementById('search-box');
+    
+    searchBox.addEventListener('input', (event) => {
+        const searchText = event.target.value.toLowerCase();
+        filterTasks(searchText);
+    });
 
     initializeApp();
 });
