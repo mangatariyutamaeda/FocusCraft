@@ -1,14 +1,5 @@
 export const renderTaskList = (todoList, tasks, addTodoToList) => {
     todoList.innerHTML = '';
-    if (tasks) {
-        for (const id in tasks) {
-            addTodoToList(id, tasks[id]);
-        }
-    }
-};
-
-export const renderTaskList = (todoList, tasks, addTodoToList) => {
-    todoList.innerHTML = '';
 
     // ヘッダーの作成
     const header = document.createElement('div');
