@@ -26,8 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    let currentInProgressId = null;
-    
     const addTodoToList = (id, task) => {
         const taskElement = createTaskElement(task, id, {
             onComplete: (id) => updateTodoStatus(id, { completed: !task.completed }),
