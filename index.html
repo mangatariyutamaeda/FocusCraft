@@ -5,6 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ToDo Manager</title>
     <link rel="stylesheet" href="style.css">
+    <script type="module">
+      // Import the Firebase modules you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+      import { getDatabase } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyAgW5Aqqnx8nN6-7hAOFhQO8K2-UTRYDd8",
+        authDomain: "focuscraft-9693e.firebaseapp.com",
+        databaseURL: "https://focuscraft-9693e-default-rtdb.firebaseio.com",
+        projectId: "focuscraft-9693e",
+        storageBucket: "focuscraft-9693e.firebasestorage.app",
+        messagingSenderId: "393976628205",
+        appId: "1:393976628205:web:18db41e35ed2a2bc381de4",
+        measurementId: "G-4YRYKM6D11"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
+
+      // Export Firebase modules
+      export { app, database };
+    </script>
 </head>
 <body>
     <h1>ToDo Manager</h1>
@@ -13,6 +37,6 @@
         <button id="add-btn">Add</button>
         <ul id="todo-list"></ul>
     </div>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
