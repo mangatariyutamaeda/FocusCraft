@@ -66,11 +66,28 @@ li button {
     border-bottom: 1px solid #ccc;
 }
 
-/* タスクデータのスタイル */
 .task-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px;
     border-bottom: 1px solid #eee;
+}
+
+.task-item span {
+    flex: 2;
+    text-align: left;
+}
+
+.task-item button {
+    margin-left: 10px; /* ボタン間の間隔を調整 */
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.task-actions {
+    display: flex;
+    justify-content: flex-end; /* ボタンを右揃え */
+    gap: 10px; /* ボタン間の余白 */
+    flex: 1; /* ボタンエリアの幅を調整 */
 }
