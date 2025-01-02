@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ToDo Manager</title>
+    <title>FocusCraft</title>
     <link rel="stylesheet" href="style.css">
     <script type="module">
-      // Import the Firebase modules you need
+      // Import only the Firebase modules you need
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
       import { getDatabase } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
@@ -31,11 +31,11 @@
     </script>
 </head>
 <body>
-    <h1>ToDo Manager</h1>
-    <div class="todo-container">
-        <input type="text" id="todo-input" placeholder="Enter a new task">
+    <h1>FocusCraft</h1>
+    <div class="focuscraft-container">
+        <input type="text" id="focuscraft-input" placeholder="Enter a new task" oninput="this.setCustomValidity('')" oninvalid="this.setCustomValidity('Task cannot be empty')" required>
         <button id="add-btn">Add</button>
-        <ul id="todo-list"></ul>
+        <ul id="focuscraft-list"></ul>
     </div>
     <script type="module" src="script.js"></script>
 </body>
