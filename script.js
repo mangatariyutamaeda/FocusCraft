@@ -51,3 +51,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+import { ref, push, set } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+const database = getDatabase(); // Firebaseの初期化が必要
+
+document.getElementById('add-btn').addEventListener('click', () => {
+    const taskInput = document.getElementById('focuscraft-input');
+    const taskText = taskInput.value.trim();
+
+    if (taskText) {
+        // データベースに新しいタスクを保存
+        const taskRef = ref(database, 'tasks'); // 'tasks'はデータの保存先の名前
+        const newTaskRef = push(taskRef); // 一意のキーを生成
+        set(newTaskRef, { text: taskText, completed: false })
+            .then(() => {
+                console.log('Task saved successfully!');
+                taskInput.value = ''; // 入力フィールドをリセット
+            })
+            .catch((error) => {
+                console.error('Error saving task:', error);
+            });
+    } else {
+        alert('Task cannot be empty!');
+    }
+});
+
