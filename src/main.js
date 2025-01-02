@@ -75,26 +75,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     saveViewBtn.addEventListener('click', () => {
-        const tasks = [...todoList.childNodes].map((node) => {
-            const taskNameElement = node.querySelector('span');
-            const completeButton = node.querySelector('button:nth-child(2)');
+        const searchQuery = searchBox.value.trim();
     
-            if (!taskNameElement || !completeButton) {
-                console.error('Task element structure is invalid:', node);
-                return null;
-            }
+        if (!searchQuery) {
+            alert('検索条件を入力してください');
+            return;
+        }
     
-            const task = {
-                id: node.dataset.id,
-                text: taskNameElement.textContent,
-                completed: completeButton.textContent === '未完了に戻す',
-            };
-            return task;
-        }).filter(Boolean); // `null` を除外
-    
-        const viewName = tasks.map((task) => task.text).join(', ') || 'すべてのタスク';
-        saveView(viewName, tasks).then(() => loadViews());
+        // ビュー名は検索条件そのものに設定
+        const viewName = searchQuery;
+        saveView(viewName, { searchQuery }).then(() => {
+            loadViews(); // 保存後にビューリストを更新
+        });
     });
+
         
     const searchBox = document.getElementById('search-box');
     
