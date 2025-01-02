@@ -51,6 +51,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const li = document.createElement('li');
         li.textContent = todo.text;
 
+        // 完了したタスクに打ち消し線を追加
+        if (todo.completed) {
+            li.style.textDecoration = 'line-through';
+        }
+
         // 完了ボタン
         const completeBtn = document.createElement('button');
         completeBtn.textContent = todo.completed ? '未実施に戻す' : '完了';
