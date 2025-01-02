@@ -55,3 +55,22 @@ li button {
     background-color: #dc3545;
     color: white;
 }
+
+/* ヘッダーのスタイル */
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+/* タスクデータのスタイル */
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
