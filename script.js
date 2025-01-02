@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+import { getDatabase, ref, set, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebaseの初期化
 const firebaseConfig = {
@@ -20,41 +20,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const todoInput = document.getElementById('focuscraft-input');
     const addBtn = document.getElementById('add-btn');
     const todoList = document.getElementById('focuscraft-list');
+    let currentInProgressId = null; // 現在「実施中」のタスクID
 
     // タスクをデータベースに追加
     const addTodo = (todoText) => {
-        console.log('addTodo called with:', todoText);
-
         const newTodoRef = push(ref(database, 'todos'));
-        set(newTodoRef, { text: todoText, completed: false })
-            .then(() => {
-                console.log('Task saved successfully!');
-            })
-            .catch((error) => {
-                console.error('Error saving task:', error.code, error.message);
-                alert(`Failed to save task: ${error.message}`);
-            });
+        set(newTodoRef, { text: todoText, completed: false, inProgress: false });
     };
 
     // データベースからタスクを取得して表示
     const loadTodos = () => {
-        console.log('loadTodos called');
-
         onValue(ref(database, 'todos'), (snapshot) => {
             const todos = snapshot.val();
             todoList.innerHTML = ''; // リストをリセット
 
             if (todos) {
-                console.log('Todos loaded:', todos);
                 for (const id in todos) {
                     addTodoToList(id, todos[id]);
                 }
-            } else {
-                console.log('No tasks found.');
             }
-        }, (error) => {
-            console.error('Error loading todos:', error.code, error.message);
-            alert(`Failed to load tasks: ${error.message}`);
         });
     };
 
@@ -63,21 +47,36 @@ document.addEventListener('DOMContentLoaded', () => {
         const li = document.createElement('li');
         li.textContent = todo.text;
 
-        // 削除ボタンを追加
+        // 完了ボタン
+        const completeBtn = document.createElement('button');
+        completeBtn.textContent = todo.completed ? 'Completed' : 'Complete';
+        completeBtn.disabled = todo.completed;
+        completeBtn.addEventListener('click', () => {
+            update(ref(database, `todos/${id}`), { completed: true });
+        });
+
+        // 実施中ボタン
+        const inProgressBtn = document.createElement('button');
+        inProgressBtn.textContent = todo.inProgress ? 'In Progress' : 'Set In Progress';
+        inProgressBtn.disabled = todo.inProgress;
+        inProgressBtn.addEventListener('click', () => {
+            if (currentInProgressId) {
+                // 他のタスクの実施中ステータスを解除
+                update(ref(database, `todos/${currentInProgressId}`), { inProgress: false });
+            }
+            update(ref(database, `todos/${id}`), { inProgress: true });
+            currentInProgressId = id;
+        });
+
+        // 削除ボタン
         const deleteBtn = document.createElement('button');
         deleteBtn.textContent = 'Delete';
         deleteBtn.addEventListener('click', () => {
-            console.log(`Deleting task with ID: ${id}`);
-            remove(ref(database, `todos/${id}`))
-                .then(() => {
-                    console.log('Task deleted successfully!');
-                })
-                .catch((error) => {
-                    console.error('Error deleting task:', error.code, error.message);
-                    alert(`Failed to delete task: ${error.message}`);
-                });
+            remove(ref(database, `todos/${id}`));
         });
 
+        li.appendChild(completeBtn);
+        li.appendChild(inProgressBtn);
         li.appendChild(deleteBtn);
         todoList.appendChild(li);
     };
