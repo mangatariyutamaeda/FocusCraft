@@ -1,6 +1,6 @@
 import { addTodo, loadTodos, updateTodoStatus, deleteTodo } from './todoManager.js';
 import { saveView, loadViews } from './viewsManager.js';
-import { renderTaskList, createTaskElement } from './ui.js';
+import { renderTaskList, createTaskElement, renderViewList } from './ui.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const todoInput = document.getElementById('focuscraft-input');
@@ -11,12 +11,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentInProgressId = null;
 
     const initializeApp = () => {
+        // タスクをロードしてリストに表示
         loadTodos((todos) => {
             renderTaskList(todoList, todos, addTodoToList);
         });
 
+        // 保存されたビューをロードして左側に表示
         loadViews((views) => {
-            renderViewList(viewList, views);
+            renderViewList(viewList, views, (tasks) => {
+                // ビューがクリックされたときの動作
+                todoList.innerHTML = ''; // 現在のタスクリストをリセット
+                tasks.forEach((task) => addTodoToList(task.id, task));
+            });
         });
     };
 
@@ -45,8 +51,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     saveViewBtn.addEventListener('click', () => {
-        const tasks = [...todoList.childNodes].map((node) => node.dataset);
-        saveView('ビュー名', tasks);
+        const tasks = [...todoList.childNodes].map((node) => {
+            const task = {
+                id: node.dataset.id,
+                text: node.querySelector('span').textContent,
+                completed: node.querySelector('button:nth-child(2)').textContent === '未完了に戻す',
+                inProgress: node.querySelector('button:nth-child(3)').textContent === '実施中',
+            };
+            return task;
+        });
+
+        const viewName = tasks.map((task) => task.text).join(', ') || 'すべてのタスク';
+        saveView(viewName, tasks).then(() => loadViews());
     });
 
     initializeApp();
