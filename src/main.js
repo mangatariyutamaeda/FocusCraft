@@ -26,11 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    const currentTaskElement = document.getElementById('current-task');
+    
     const addTodoToList = (id, task) => {
         const taskElement = createTaskElement(task, id, {
             onComplete: (id) => updateTodoStatus(id, { completed: !task.completed }),
             onInProgress: (id) => {
-                // 現在の「実施中」をリセット
+                // 現在実施中のタスクを更新
                 if (currentInProgressId) {
                     const previousTask = document.querySelector(`[data-id="${currentInProgressId}"]`);
                     if (previousTask) {
@@ -38,9 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         btn.textContent = '実施中に設定';
                     }
                 }
-    
-                // 新しい「実施中」を設定
                 currentInProgressId = id;
+                currentTaskElement.textContent = task.text;
+    
                 const currentTask = document.querySelector(`[data-id="${id}"]`);
                 if (currentTask) {
                     const btn = currentTask.querySelector('.in-progress-btn');
@@ -49,7 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             onDelete: (id) => {
                 if (id === currentInProgressId) {
-                    currentInProgressId = null; // 実施中をリセット
+                    currentInProgressId = null;
+                    currentTaskElement.textContent = 'なし';
                 }
                 deleteTodo(id);
             },
@@ -58,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         taskElement.setAttribute('data-id', id); // タスクの要素にIDを設定
         todoList.appendChild(taskElement);
     };
+
 
 
 
@@ -74,9 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const tasks = [...todoList.childNodes].map((node) => {
             const taskNameElement = node.querySelector('span');
             const completeButton = node.querySelector('button:nth-child(2)');
-            const inProgressButton = node.querySelector('button:nth-child(3)');
     
-            if (!taskNameElement || !completeButton || !inProgressButton) {
+            if (!taskNameElement || !completeButton) {
                 console.error('Task element structure is invalid:', node);
                 return null;
             }
@@ -85,7 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 id: node.dataset.id,
                 text: taskNameElement.textContent,
                 completed: completeButton.textContent === '未完了に戻す',
-                inProgress: inProgressButton.textContent === '実施中',
             };
             return task;
         }).filter(Boolean); // `null` を除外
@@ -93,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const viewName = tasks.map((task) => task.text).join(', ') || 'すべてのタスク';
         saveView(viewName, tasks).then(() => loadViews());
     });
+
 
     initializeApp();
 });
