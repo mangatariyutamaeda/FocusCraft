@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchBox = document.getElementById('search-box');
     const tagList = document.getElementById('tag-list');
     const saveViewBtn = document.getElementById('save-view-btn');
+    const viewList = document.getElementById('view-list'); // ビューを表示するリスト
     const headerRow = document.createElement('div');
     headerRow.innerHTML = `
         <div style="display: flex; justify-content: space-between; font-weight: bold;">
@@ -36,6 +37,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentInProgressId = null; // 現在「実施中」のタスクID
     const selectedTags = new Set();
+
+    // 初期状態で「実施中」のタスクを取得
+    const initializeInProgress = () => {
+        onValue(ref(database, 'todos'), (snapshot) => {
+            const todos = snapshot.val();
+            for (const id in todos) {
+                if (todos[id].inProgress) {
+                    currentInProgressId = id;
+                    break;
+                }
+            }
+        }, { onlyOnce: true });
+    };
+
+    // ビューリストを表示
+    const loadViews = () => {
+        onValue(ref(database, 'views'), (snapshot) => {
+            const views = snapshot.val();
+            viewList.innerHTML = '';
+
+            if (views) {
+                for (const viewName in views) {
+                    const viewBtn = document.createElement('button');
+                    viewBtn.textContent = viewName;
+                    viewBtn.addEventListener('click', () => {
+                        const tasks = views[viewName];
+                        todoList.innerHTML = '';
+                        tasks.forEach(task => addTodoToList(task.id, task));
+                    });
+                    viewList.appendChild(viewBtn);
+                }
+            }
+        });
+    };
 
     // タスクをデータベースに追加
     const addTodo = (todoText, tags = []) => {
@@ -113,54 +148,32 @@ document.addEventListener('DOMContentLoaded', () => {
         todoList.appendChild(li);
     };
 
-    // タグを取得して表示
-    onValue(ref(database, 'tags'), (snapshot) => {
-        const tags = snapshot.val();
-        tagList.innerHTML = '';
-
-        if (tags) {
-            for (const tag in tags) {
-                const tagBtn = document.createElement('button');
-                tagBtn.textContent = tag;
-                tagBtn.addEventListener('click', () => {
-                    if (selectedTags.has(tag)) {
-                        selectedTags.delete(tag);
-                    } else {
-                        selectedTags.add(tag);
-                    }
-                    filterByTags([...selectedTags]);
-                });
-                tagList.appendChild(tagBtn);
-            }
-        }
-    });
-
     // 現在のビューを保存
     saveViewBtn.textContent = '現在のビューを保存';
     saveViewBtn.addEventListener('click', () => {
         const query = searchBox.value.trim();
-        const viewName = prompt('保存するビューの名前を入力してください:');
+        const viewName = query || 'すべてのタスク';
 
-        if (viewName) {
-            const filteredTasks = [];
-            onValue(ref(database, 'todos'), (snapshot) => {
-                const todos = snapshot.val();
-                for (const id in todos) {
-                    if (query === '' || todos[id].text.includes(query)) {
-                        filteredTasks.push({ id, ...todos[id] });
-                    }
+        const filteredTasks = [];
+        onValue(ref(database, 'todos'), (snapshot) => {
+            const todos = snapshot.val();
+            for (const id in todos) {
+                if (query === '' || todos[id].text.includes(query)) {
+                    filteredTasks.push({ id, ...todos[id] });
                 }
+            }
 
-                // ビューを保存
-                set(ref(database, `views/${viewName}`), filteredTasks)
-                    .then(() => alert('ビューを保存しました！'))
-                    .catch((error) => console.error('ビューの保存中にエラーが発生しました:', error));
-            }, { onlyOnce: true });
-        }
+            // ビューを保存
+            set(ref(database, `views/${viewName}`), filteredTasks)
+                .then(() => alert('ビューを保存しました！'))
+                .catch((error) => console.error('ビューの保存中にエラーが発生しました:', error));
+        }, { onlyOnce: true });
     });
 
     // 初期化
+    initializeInProgress();
     loadTodos();
+    loadViews();
 
     // 検索イベントを設定
     searchBox.placeholder = 'タスクを検索';
