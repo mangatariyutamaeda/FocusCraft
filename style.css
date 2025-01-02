@@ -84,3 +84,23 @@ li button {
     flex: 2;
     text-align: left;
 }
+
+
+.current-task-container {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-right: 20px;
+    width: 300px;
+}
+
+.current-task-container h3 {
+    margin-top: 0;
+    text-align: center;
+}
+
+#current-task {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+}
