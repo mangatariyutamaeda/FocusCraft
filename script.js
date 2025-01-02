@@ -21,46 +21,60 @@ document.addEventListener('DOMContentLoaded', () => {
     const addBtn = document.getElementById('add-btn');
     const todoList = document.getElementById('focuscraft-list');
 
-    // ToDoをデータベースに追加
+    // タスクをデータベースに追加
     const addTodo = (todoText) => {
+        console.log('addTodo called with:', todoText);
+
         const newTodoRef = push(ref(database, 'todos'));
         set(newTodoRef, { text: todoText, completed: false })
             .then(() => {
                 console.log('Task saved successfully!');
             })
             .catch((error) => {
-                console.error('Error saving task:', error);
+                console.error('Error saving task:', error.code, error.message);
+                alert(`Failed to save task: ${error.message}`);
             });
     };
 
-    // データベースからToDoを取得して表示
+    // データベースからタスクを取得して表示
     const loadTodos = () => {
+        console.log('loadTodos called');
+
         onValue(ref(database, 'todos'), (snapshot) => {
             const todos = snapshot.val();
             todoList.innerHTML = ''; // リストをリセット
+
             if (todos) {
+                console.log('Todos loaded:', todos);
                 for (const id in todos) {
                     addTodoToList(id, todos[id]);
                 }
+            } else {
+                console.log('No tasks found.');
             }
+        }, (error) => {
+            console.error('Error loading todos:', error.code, error.message);
+            alert(`Failed to load tasks: ${error.message}`);
         });
     };
 
-    // HTMLリストにToDoを追加
+    // HTMLリストにタスクを追加
     const addTodoToList = (id, todo) => {
         const li = document.createElement('li');
         li.textContent = todo.text;
 
-        // 削除ボタン
+        // 削除ボタンを追加
         const deleteBtn = document.createElement('button');
         deleteBtn.textContent = 'Delete';
         deleteBtn.addEventListener('click', () => {
+            console.log(`Deleting task with ID: ${id}`);
             remove(ref(database, `todos/${id}`))
                 .then(() => {
                     console.log('Task deleted successfully!');
                 })
                 .catch((error) => {
-                    console.error('Error deleting task:', error);
+                    console.error('Error deleting task:', error.code, error.message);
+                    alert(`Failed to delete task: ${error.message}`);
                 });
         });
 
@@ -71,12 +85,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 初期化
     loadTodos();
 
-    // ボタンクリックでToDoを追加
+    // ボタンクリックでタスクを追加
     addBtn.addEventListener('click', () => {
         const todoText = todoInput.value.trim();
+
         if (todoText) {
             addTodo(todoText);
-            todoInput.value = '';
+            todoInput.value = ''; // 入力フィールドをリセット
         } else {
             alert('Task cannot be empty!');
         }
