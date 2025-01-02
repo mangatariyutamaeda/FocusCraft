@@ -46,40 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // タスクをフィルタリングする（検索用）
-    const filterTasks = (query) => {
-        onValue(ref(database, 'todos'), (snapshot) => {
-            const todos = snapshot.val();
-            todoList.innerHTML = ''; // リストをリセット
-
-            if (todos) {
-                for (const id in todos) {
-                    const task = todos[id];
-                    if (task.text.toLowerCase().includes(query)) {
-                        addTodoToList(id, task);
-                    }
-                }
-            }
-        });
-    };
-
-    // タグでタスクをフィルタリング
-    const filterByTags = (tags) => {
-        onValue(ref(database, 'todos'), (snapshot) => {
-            const todos = snapshot.val();
-            todoList.innerHTML = '';
-
-            if (todos) {
-                for (const id in todos) {
-                    const task = todos[id];
-                    if (tags.some(tag => task.tags && task.tags.includes(tag))) {
-                        addTodoToList(id, task);
-                    }
-                }
-            }
-        });
-    };
-
     // HTMLリストにタスクを追加
     const addTodoToList = (id, todo) => {
         const li = document.createElement('li');
@@ -87,23 +53,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 完了ボタン
         const completeBtn = document.createElement('button');
-        completeBtn.textContent = todo.completed ? '完了済み' : '完了';
-        completeBtn.disabled = todo.completed;
+        completeBtn.textContent = todo.completed ? '未実施に戻す' : '完了';
         completeBtn.addEventListener('click', () => {
-            update(ref(database, `todos/${id}`), { completed: true });
+            update(ref(database, `todos/${id}`), { completed: !todo.completed });
         });
 
         // 実施中ボタン
         const inProgressBtn = document.createElement('button');
         inProgressBtn.textContent = todo.inProgress ? '実施中' : '実施中に設定';
-        inProgressBtn.disabled = todo.inProgress;
         inProgressBtn.addEventListener('click', () => {
-            if (currentInProgressId) {
-                // 他のタスクの実施中ステータスを解除
-                update(ref(database, `todos/${currentInProgressId}`), { inProgress: false });
+            if (todo.inProgress) {
+                update(ref(database, `todos/${id}`), { inProgress: false });
+                currentInProgressId = null;
+            } else {
+                if (currentInProgressId) {
+                    // 他のタスクの実施中ステータスを解除
+                    update(ref(database, `todos/${currentInProgressId}`), { inProgress: false });
+                }
+                update(ref(database, `todos/${id}`), { inProgress: true });
+                currentInProgressId = id;
             }
-            update(ref(database, `todos/${id}`), { inProgress: true });
-            currentInProgressId = id;
         });
 
         // 削除ボタン
@@ -141,35 +110,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ビューを保存
-    saveViewBtn.addEventListener('click', () => {
-        const query = searchBox.value.trim().toLowerCase();
-        const viewName = prompt('このビューの名前を入力してください:');
-
-        if (viewName) {
-            const filteredTasks = [];
-            onValue(ref(database, 'todos'), (snapshot) => {
-                const todos = snapshot.val();
-                for (const id in todos) {
-                    if (todos[id].text.toLowerCase().includes(query)) {
-                        filteredTasks.push({ id, ...todos[id] });
-                    }
-                }
-
-                // ビューを保存
-                set(ref(database, `views/${viewName}`), filteredTasks)
-                    .then(() => alert('ビューを保存しました！'))
-                    .catch((error) => console.error('ビューの保存中にエラーが発生しました:', error));
-            }, { onlyOnce: true });
-        }
-    });
-
     // 初期化
     loadTodos();
 
     // 検索イベントを設定
     searchBox.addEventListener('input', () => {
-        const query = searchBox.value.trim().toLowerCase();
+        const query = searchBox.value.trim();
         filterTasks(query);
     });
 
@@ -184,4 +130,38 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('タスクは空にできません！');
         }
     });
+
+    // 検索用
+    const filterTasks = (query) => {
+        onValue(ref(database, 'todos'), (snapshot) => {
+            const todos = snapshot.val();
+            todoList.innerHTML = ''; // リストをリセット
+
+            if (todos) {
+                for (const id in todos) {
+                    const task = todos[id];
+                    if (task.text.includes(query)) {
+                        addTodoToList(id, task);
+                    }
+                }
+            }
+        });
+    };
+
+    // タグでタスクをフィルタリング
+    const filterByTags = (tags) => {
+        onValue(ref(database, 'todos'), (snapshot) => {
+            const todos = snapshot.val();
+            todoList.innerHTML = '';
+
+            if (todos) {
+                for (const id in todos) {
+                    const task = todos[id];
+                    if (tags.some(tag => task.tags && task.tags.includes(tag))) {
+                        addTodoToList(id, task);
+                    }
+                }
+            }
+        });
+    };
 });
