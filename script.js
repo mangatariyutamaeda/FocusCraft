@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 完了ボタン
         const completeBtn = document.createElement('button');
-        completeBtn.textContent = todo.completed ? 'Completed' : 'Complete';
+        completeBtn.textContent = todo.completed ? '完了済み' : '完了';
         completeBtn.disabled = todo.completed;
         completeBtn.addEventListener('click', () => {
             update(ref(database, `todos/${id}`), { completed: true });
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 実施中ボタン
         const inProgressBtn = document.createElement('button');
-        inProgressBtn.textContent = todo.inProgress ? 'In Progress' : 'Set In Progress';
+        inProgressBtn.textContent = todo.inProgress ? '実施中' : '実施中に設定';
         inProgressBtn.disabled = todo.inProgress;
         inProgressBtn.addEventListener('click', () => {
             if (currentInProgressId) {
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 削除ボタン
         const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = 'Delete';
+        deleteBtn.textContent = '削除';
         deleteBtn.addEventListener('click', () => {
             remove(ref(database, `todos/${id}`));
         });
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ビューを保存
     saveViewBtn.addEventListener('click', () => {
         const query = searchBox.value.trim().toLowerCase();
-        const viewName = prompt('Enter a name for this view:');
+        const viewName = prompt('このビューの名前を入力してください:');
 
         if (viewName) {
             const filteredTasks = [];
@@ -158,8 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // ビューを保存
                 set(ref(database, `views/${viewName}`), filteredTasks)
-                    .then(() => alert('View saved successfully!'))
-                    .catch((error) => console.error('Error saving view:', error));
+                    .then(() => alert('ビューを保存しました！'))
+                    .catch((error) => console.error('ビューの保存中にエラーが発生しました:', error));
             }, { onlyOnce: true });
         }
     });
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
             addTodo(todoText);
             todoInput.value = ''; // 入力フィールドをリセット
         } else {
-            alert('Task cannot be empty!');
+            alert('タスクは空にできません！');
         }
     });
 });
