@@ -1,15 +1,36 @@
-import { database } from './index.html'; // Firebase初期化をインポート
-import { ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+// Firebaseの初期化
+const firebaseConfig = {
+    apiKey: "AIzaSyAgW5Aqqnx8nN6-7hAOFhQO8K2-UTRYDd8",
+    authDomain: "focuscraft-9693e.firebaseapp.com",
+    databaseURL: "https://focuscraft-9693e-default-rtdb.firebaseio.com",
+    projectId: "focuscraft-9693e",
+    storageBucket: "focuscraft-9693e.firebasestorage.app",
+    messagingSenderId: "393976628205",
+    appId: "1:393976628205:web:18db41e35ed2a2bc381de4",
+    measurementId: "G-4YRYKM6D11"
+};
+
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
 document.addEventListener('DOMContentLoaded', () => {
-    const todoInput = document.getElementById('todo-input');
+    const todoInput = document.getElementById('focuscraft-input');
     const addBtn = document.getElementById('add-btn');
-    const todoList = document.getElementById('todo-list');
+    const todoList = document.getElementById('focuscraft-list');
 
     // ToDoをデータベースに追加
     const addTodo = (todoText) => {
         const newTodoRef = push(ref(database, 'todos'));
-        set(newTodoRef, { text: todoText });
+        set(newTodoRef, { text: todoText, completed: false })
+            .then(() => {
+                console.log('Task saved successfully!');
+            })
+            .catch((error) => {
+                console.error('Error saving task:', error);
+            });
     };
 
     // データベースからToDoを取得して表示
@@ -17,8 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
         onValue(ref(database, 'todos'), (snapshot) => {
             const todos = snapshot.val();
             todoList.innerHTML = ''; // リストをリセット
-            for (const id in todos) {
-                addTodoToList(id, todos[id]);
+            if (todos) {
+                for (const id in todos) {
+                    addTodoToList(id, todos[id]);
+                }
             }
         });
     };
@@ -32,7 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const deleteBtn = document.createElement('button');
         deleteBtn.textContent = 'Delete';
         deleteBtn.addEventListener('click', () => {
-            remove(ref(database, `todos/${id}`));
+            remove(ref(database, `todos/${id}`))
+                .then(() => {
+                    console.log('Task deleted successfully!');
+                })
+                .catch((error) => {
+                    console.error('Error deleting task:', error);
+                });
         });
 
         li.appendChild(deleteBtn);
@@ -48,32 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (todoText) {
             addTodo(todoText);
             todoInput.value = '';
+        } else {
+            alert('Task cannot be empty!');
         }
     });
 });
-
-import { ref, push, set } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
-
-const database = getDatabase(); // Firebaseの初期化が必要
-
-document.getElementById('add-btn').addEventListener('click', () => {
-    const taskInput = document.getElementById('focuscraft-input');
-    const taskText = taskInput.value.trim();
-
-    if (taskText) {
-        // データベースに新しいタスクを保存
-        const taskRef = ref(database, 'tasks'); // 'tasks'はデータの保存先の名前
-        const newTaskRef = push(taskRef); // 一意のキーを生成
-        set(newTaskRef, { text: taskText, completed: false })
-            .then(() => {
-                console.log('Task saved successfully!');
-                taskInput.value = ''; // 入力フィールドをリセット
-            })
-            .catch((error) => {
-                console.error('Error saving task:', error);
-            });
-    } else {
-        alert('Task cannot be empty!');
-    }
-});
-
