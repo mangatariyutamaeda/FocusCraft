@@ -72,15 +72,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     saveViewBtn.addEventListener('click', () => {
         const tasks = [...todoList.childNodes].map((node) => {
+            const taskNameElement = node.querySelector('span');
+            const completeButton = node.querySelector('button:nth-child(2)');
+            const inProgressButton = node.querySelector('button:nth-child(3)');
+    
+            if (!taskNameElement || !completeButton || !inProgressButton) {
+                console.error('Task element structure is invalid:', node);
+                return null;
+            }
+    
             const task = {
                 id: node.dataset.id,
-                text: node.querySelector('span').textContent,
-                completed: node.querySelector('button:nth-child(2)').textContent === '未完了に戻す',
-                inProgress: node.querySelector('button:nth-child(3)').textContent === '実施中',
+                text: taskNameElement.textContent,
+                completed: completeButton.textContent === '未完了に戻す',
+                inProgress: inProgressButton.textContent === '実施中',
             };
             return task;
-        });
-
+        }).filter(Boolean); // `null` を除外
+    
         const viewName = tasks.map((task) => task.text).join(', ') || 'すべてのタスク';
         saveView(viewName, tasks).then(() => loadViews());
     });
