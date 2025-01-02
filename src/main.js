@@ -98,11 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
     const searchBox = document.getElementById('search-box');
     
-    searchBox.addEventListener('input', (event) => {
-        const searchText = event.target.value.toLowerCase();
-        filterTasks(searchText);
-    });
-    
+    // 絞り込みロジックの実装
     const filterTasks = (searchText) => {
         const tasks = [...todoList.childNodes]; // 現在のタスクリストの子要素を取得
     
@@ -119,6 +115,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     };
+    
+    // イベントリスナーを設定
+    searchBox.addEventListener('input', (event) => {
+        const searchText = event.target.value.toLowerCase();
+        filterTasks(searchText);
+    });
+
 
     
     initializeApp();
