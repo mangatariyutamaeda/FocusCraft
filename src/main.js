@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
 
+
     addBtn.addEventListener('click', () => {
         const todoText = todoInput.value.trim();
         if (todoText) {
