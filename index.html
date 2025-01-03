@@ -12,10 +12,22 @@
     
     <!-- メニュー -->
     <div id="menu" class="menu-container">
-        <button id="focus-mode-btn">フォーカスモード</button>
         <button id="main-view-btn">通常モード</button>
+        <button id="focus-mode-btn">フォーカスモード</button>
+        <button id="project-view-btn">プロジェクト別一覧</button>
     </div>
 
+    <div id="project-view" style="display: none;">
+        <h2>プロジェクト別</h2>
+        <!-- タグフィルタ -->
+        <div id="tag-filter-container">
+            <label><input type="checkbox" id="all-tags-toggle"> 全タグ表示</label>
+            <div id="tag-filter"></div>
+        </div>
+        <!-- タグ別のタスクリスト -->
+        <div id="grouped-task-list"></div>
+    </div>
+    
     <div id="focus-mode" style="display: none;">
         <h2>フォーカスモード</h2>
         <div id="focus-task">
