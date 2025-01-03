@@ -1,38 +1,27 @@
 import { addTodo, loadTodos, updateTodoStatus, deleteTodo } from './todoManager.js';
 import { saveView, loadViews } from './viewsManager.js';
 import { renderTaskList, createTaskElement, renderViewList } from './ui.js';
-import { updateTaskDetails } from './todoManager.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // DOM要素の取得
-    const focusModeBtn = document.getElementById('focus-mode-btn');
-    const mainViewBtn = document.getElementById('main-view-btn');
-    const mainView = document.getElementById('main-view');
-    const focusMode = document.getElementById('focus-mode');
-    const focusTaskTitle = document.getElementById('focus-task-title');
-    const focusTaskNotes = document.getElementById('focus-task-notes');
-    const focusTaskGoal = document.getElementById('focus-task-goal');
-    const focusTaskTime = document.getElementById('focus-task-time');
     const todoInput = document.getElementById('focuscraft-input');
     const tagInput = document.getElementById('tag-input');
     const addBtn = document.getElementById('add-btn');
     const todoList = document.getElementById('focuscraft-list');
     const saveViewBtn = document.getElementById('save-view-btn');
-    const searchBox = document.getElementById('search-box');
     const viewList = document.getElementById('view-list');
+    const searchBox = document.getElementById('search-box');
+    const currentTaskElement = document.getElementById('current-task');
 
-    // 状態管理
-    let currentInProgressId = null;
-    let currentInProgressTask = null;
+    let currentInProgressId = null; // 実施中のタスクID
+    let currentInProgressTask = null; // 実施中のタスクデータ
 
-    // 初期化処理
     const initializeApp = () => {
-        // タスクのロード
+        // タスクをロードしてリストに表示
         loadTodos((todos) => {
             renderTaskList(todoList, todos, addTodoToList);
         });
 
-        // ビューのロード
+        // 保存されたビューをロードして左側に表示
         loadViews((views) => {
             renderViewList(viewList, views, searchBox, (tasks) => {
                 todoList.innerHTML = '';
@@ -41,37 +30,60 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // タスク詳細の更新処理
-    const updateFocusTask = (id, task) => {
-        currentInProgressTask = { ...task, id };
-        focusTaskTitle.textContent = task.text || '現在のタスクはありません';
-        focusTaskNotes.value = task.notes || '';
-        focusTaskGoal.value = task.goal || '';
-        focusTaskTime.value = task.time || '';
+    const updateCurrentTaskDisplay = () => {
+        if (currentInProgressTask) {
+            currentTaskElement.textContent = currentInProgressTask.text;
+        } else {
+            currentTaskElement.textContent = 'なし';
+        }
     };
 
-    // フォーカスモード切り替え
-    focusModeBtn.addEventListener('click', () => {
-        mainView.style.display = 'none';
-        focusMode.style.display = 'block';
+    const addTodoToList = (id, task) => {
+        const taskElement = createTaskElement(task, id, {
+            onComplete: (id) => updateTodoStatus(id, { completed: !task.completed }),
+            onInProgress: (id) => {
+                if (currentInProgressId) {
+                    // 以前のタスクをリセット
+                    const previousTask = document.querySelector(`[data-id="${currentInProgressId}"]`);
+                    if (previousTask) {
+                        const btn = previousTask.querySelector('.in-progress-btn');
+                        if (btn) {
+                            btn.textContent = '実施中に設定';
+                        }
+                    }
+                }
 
-        if (currentInProgressTask) {
-            updateFocusTask(currentInProgressTask.id, currentInProgressTask);
-        } else {
-            focusTaskTitle.textContent = '現在のタスクはありません';
-            focusTaskNotes.value = '';
-            focusTaskGoal.value = '';
-            focusTaskTime.value = '';
-        }
-    });
+                // 現在のタスクを更新
+                currentInProgressId = id;
+                currentInProgressTask = task;
 
-    // 通常モード切り替え
-    mainViewBtn.addEventListener('click', () => {
-        focusMode.style.display = 'none';
-        mainView.style.display = 'block';
-    });
+                // ボタンテキストを更新
+                const currentTask = document.querySelector(`[data-id="${id}"]`);
+                if (currentTask) {
+                    const btn = currentTask.querySelector('.in-progress-btn');
+                    if (btn) {
+                        btn.textContent = '実施中';
+                    }
+                }
 
-    // タスク追加処理
+                // 表示を更新
+                updateCurrentTaskDisplay();
+            },
+            onDelete: (id) => {
+                if (id === currentInProgressId) {
+                    currentInProgressId = null;
+                    currentInProgressTask = null;
+                    updateCurrentTaskDisplay();
+                }
+                deleteTodo(id);
+            },
+        });
+
+        taskElement.setAttribute('data-id', id); // タスクの要素にIDを設定
+        todoList.appendChild(taskElement);
+    };
+
+    // タスクを追加
     addBtn.addEventListener('click', () => {
         const todoText = todoInput.value.trim();
         const tags = tagInput.value.trim().split(',').map((tag) => tag.trim());
@@ -83,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ビュー保存処理
+    // ビューを保存
     saveViewBtn.addEventListener('click', () => {
         const searchQuery = searchBox.value.trim();
 
@@ -97,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // タスク絞り込み処理
+    // タスクの絞り込み
     searchBox.addEventListener('input', (event) => {
         const searchText = event.target.value.toLowerCase();
         const tasks = [...todoList.childNodes];
@@ -111,49 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // フォーカスモードの入力処理
-    focusTaskNotes.addEventListener('input', () => {
-        if (currentInProgressTask) {
-            currentInProgressTask.notes = focusTaskNotes.value;
-            updateTaskDetails(currentInProgressTask.id, { notes: focusTaskNotes.value });
-        }
-    });
-
-    focusTaskGoal.addEventListener('input', () => {
-        if (currentInProgressTask) {
-            currentInProgressTask.goal = focusTaskGoal.value;
-            updateTaskDetails(currentInProgressTask.id, { goal: focusTaskGoal.value });
-        }
-    });
-
-    focusTaskTime.addEventListener('input', () => {
-        if (currentInProgressTask) {
-            currentInProgressTask.time = focusTaskTime.value;
-            updateTaskDetails(currentInProgressTask.id, { time: focusTaskTime.value });
-        }
-    });
-
-    // タスクリストの表示処理
-    const addTodoToList = (id, task) => {
-        const taskElement = createTaskElement(task, id, {
-            onComplete: (id) => updateTodoStatus(id, { completed: !task.completed }),
-            onInProgress: (id) => {
-                currentInProgressId = id;
-                updateFocusTask(id, task);
-            },
-            onDelete: (id) => {
-                if (id === currentInProgressId) {
-                    currentInProgressId = null;
-                    focusTaskTitle.textContent = '現在のタスクはありません';
-                }
-                deleteTodo(id);
-            },
-        });
-
-        taskElement.setAttribute('data-id', id);
-        todoList.appendChild(taskElement);
-    };
-
-    // アプリ初期化
+    // アプリを初期化
     initializeApp();
 });
