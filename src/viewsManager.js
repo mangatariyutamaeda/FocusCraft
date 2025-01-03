@@ -1,4 +1,4 @@
-import { database, ref, set, onValue } from './firebase.js';
+import { database, ref, set, onValue, remove } from './firebase.js';
 
 // ビューを保存
 export const saveView = (viewName, tasks) => {
