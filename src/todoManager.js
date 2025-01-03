@@ -19,3 +19,8 @@ export const updateTodoStatus = (id, updates) => {
 export const deleteTodo = (id) => {
     return remove(ref(database, `todos/${id}`));
 };
+
+
+export const updateTaskDetails = (id, updates) => {
+    return update(ref(database, `todos/${id}`), updates);
+};
