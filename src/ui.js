@@ -84,6 +84,9 @@ export const renderViewList = (viewListElement, views, onViewClick) => {
         const deleteButton = document.createElement('button');
         deleteButton.textContent = '削除';
         deleteButton.style.marginLeft = '10px';
+
+        console.log('Generated delete button:', deleteButton); // デバッグログ
+
         deleteButton.addEventListener('click', () => {
             if (confirm(`ビュー「${viewName}」を削除しますか？`)) {
                 deleteView(viewName).then(() => {
