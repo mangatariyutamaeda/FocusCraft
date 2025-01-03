@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const initializeApp = () => {
         loadTodos((todos) => {
             if (!todos) {
-                console.error('タスクが存在しません。');
+                console.warn('タスクが存在しません。');
                 return;
             }
             renderTaskList(todoList, todos, addTodoToList);
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         loadViews((views) => {
             if (!views) {
-                console.error('ビューが存在しません。');
+                console.warn('ビューが存在しません。');
                 return;
             }
             renderViewList(viewList, views, (tasks) => {
@@ -111,9 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateCurrentTaskDisplay = () => {
         if (currentInProgressTask) {
-            currentTaskElement.textContent = currentInProgressTask.text;
+            focusTaskTitle.textContent = currentInProgressTask.text || 'なし';
         } else {
-            currentTaskElement.textContent = 'なし';
+            focusTaskTitle.textContent = 'なし';
         }
     };
 
