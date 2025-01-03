@@ -169,5 +169,27 @@ document.addEventListener('DOMContentLoaded', () => {
         filterTasks(searchText);
     });
 
+focusTaskNotes.addEventListener('input', () => {
+    if (currentInProgressTask) {
+        currentInProgressTask.notes = focusTaskNotes.value;
+        updateTaskDetails(currentInProgressTask.id, { notes: focusTaskNotes.value });
+    }
+});
+
+focusTaskGoal.addEventListener('input', () => {
+    if (currentInProgressTask) {
+        currentInProgressTask.goal = focusTaskGoal.value;
+        updateTaskDetails(currentInProgressTask.id, { goal: focusTaskGoal.value });
+    }
+});
+
+focusTaskTime.addEventListener('input', () => {
+    if (currentInProgressTask) {
+        currentInProgressTask.time = focusTaskTime.value;
+        updateTaskDetails(currentInProgressTask.id, { time: focusTaskTime.value });
+    }
+});
+
+
     initializeApp();
 });
