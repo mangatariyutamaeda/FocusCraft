@@ -67,18 +67,32 @@ export const createTaskElement = (task, id, handlers) => {
     return li;
 };
 
+let activeTag = null; // 現在選択されているタグを管理
+
 export const filterTasksByTag = (tag) => {
-    const tasks = [...document.querySelectorAll('.task-item')];
-    tasks.forEach((task) => {
-        const tags = task.querySelectorAll('.tag');
-        const tagTexts = [...tags].map((t) => t.textContent);
-        if (tagTexts.includes(tag)) {
-            task.style.display = 'flex'; // 表示
-        } else {
-            task.style.display = 'none'; // 非表示
-        }
-    });
+    const tasks = [...document.querySelectorAll('.task-item')]; // すべてのタスク要素を取得
+
+    if (activeTag === tag) {
+        // 同じタグをもう一度押した場合、解除
+        activeTag = null;
+        tasks.forEach((task) => {
+            task.style.display = 'flex'; // 全タスクを表示
+        });
+    } else {
+        // 新しいタグを選択
+        activeTag = tag;
+        tasks.forEach((task) => {
+            const tags = task.querySelectorAll('.tag');
+            const tagTexts = [...tags].map((t) => t.textContent);
+            if (tagTexts.includes(tag)) {
+                task.style.display = 'flex'; // タグが一致するタスクを表示
+            } else {
+                task.style.display = 'none'; // タグが一致しないタスクを非表示
+            }
+        });
+    }
 };
+
 export const renderViewList = (viewListElement, views, onViewClick) => {
     viewListElement.innerHTML = ''; // リストをリセット
 
