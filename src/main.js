@@ -69,9 +69,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     addBtn.addEventListener('click', () => {
         const todoText = todoInput.value.trim();
+        const tags = tagInput.value.trim().split(',').map((tag) => tag.trim());
+    
         if (todoText) {
-            addTodo(todoText);
+            addTodo(todoText, tags);
             todoInput.value = '';
+            tagInput.value = '';
         }
     });
 
