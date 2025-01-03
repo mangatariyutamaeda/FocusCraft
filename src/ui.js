@@ -93,8 +93,8 @@ export const renderViewList = (viewListElement, views, onViewClick) => {
         deleteButton.addEventListener('click', () => {
             deleteView(viewName).then(() => {
                 loadViews((updatedViews) => {
-                    renderViewList(viewListElement, updatedViews, onViewClick);
-                });
+                    renderViewList(viewListElement, updatedViews, searchBox, onViewClick);
+                 });
             });
         });
 
