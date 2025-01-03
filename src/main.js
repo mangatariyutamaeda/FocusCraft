@@ -25,11 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 todoList.innerHTML = ''; // 現在のタスクリストをリセット
                 tasks.forEach((task) => addTodoToList(task.id, task));
             });
-        });        
+        });
     };
 
     const currentTaskElement = document.getElementById('current-task');
-    
+
     const addTodoToList = (id, task) => {
         const taskElement = createTaskElement(task, id, {
             onComplete: (id) => updateTodoStatus(id, { completed: !task.completed }),
@@ -44,14 +44,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
                 currentInProgressId = id;
-                currentTaskElement.textContent = task.text;
-            
+
                 const currentTask = document.querySelector(`[data-id="${id}"]`);
                 if (currentTask) {
                     const btn = currentTask.querySelector('.in-progress-btn');
                     if (btn) {
                         btn.textContent = '実施中';
                     }
+                }
+
+                if (currentTaskElement) {
+                    currentTaskElement.textContent = task.text || 'なし';
                 }
             },
             onDelete: (id) => {
@@ -62,19 +65,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 deleteTodo(id);
             },
         });
-    
+
         taskElement.setAttribute('data-id', id); // タスクの要素にIDを設定
         todoList.appendChild(taskElement);
     };
 
-
-
-
-
     addBtn.addEventListener('click', () => {
         const todoText = todoInput.value.trim();
         const tags = tagInput.value.trim().split(',').map((tag) => tag.trim());
-    
+
         if (todoText) {
             addTodo(todoText, tags);
             todoInput.value = '';
@@ -84,12 +83,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     saveViewBtn.addEventListener('click', () => {
         const searchQuery = searchBox.value.trim();
-    
+
         if (!searchQuery) {
             alert('検索条件を入力してください');
             return;
         }
-    
+
         // ビュー名は検索条件そのものに設定
         const viewName = searchQuery;
         saveView(viewName, { searchQuery }).then(() => {
@@ -97,12 +96,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-        
-    
     // 絞り込みロジックの実装
     const filterTasks = (searchText) => {
         const tasks = [...todoList.childNodes]; // 現在のタスクリストの子要素を取得
-    
+
         tasks.forEach((task) => {
             const taskNameElement = task.querySelector('span');
             if (taskNameElement) {
@@ -117,18 +114,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    
     // イベントリスナーを設定
     searchBox.addEventListener('input', (event) => {
         const searchText = event.target.value.toLowerCase();
         filterTasks(searchText);
     });
 
-
-    
     initializeApp();
 });
-
-
-
-
