@@ -27,7 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewList = document.getElementById('view-list');
     const searchBox = document.getElementById('search-box');
     const currentTaskElement = document.getElementById('current-task'); // 修正箇所: currentTaskElementの定義を追加
-
+    
+    const projectViewBtn = document.getElementById('project-view-btn');
+    const projectView = document.getElementById('project-view');
+    const groupedTaskList = document.getElementById('grouped-task-list');
+    const tagFilterContainer = document.getElementById('tag-filter');
+    const allTagsToggle = document.getElementById('all-tags-toggle');
+    
     let currentInProgressTask = null;
     let currentInProgressId = null;
     let startTime = null;
@@ -204,5 +210,107 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    const renderGroupedTasks = (tasks) => {
+        groupedTaskList.innerHTML = '';
+    
+        const tagsMap = {};
+    
+        // タスクをタグごとにグループ化
+        Object.entries(tasks).forEach(([id, task]) => {
+            (task.tags || ['未分類']).forEach((tag) => {
+                if (!tagsMap[tag]) {
+                    tagsMap[tag] = [];
+                }
+                tagsMap[tag].push({ id, ...task });
+            });
+        });
+    
+        // 各タグのタスクリストを生成
+        Object.entries(tagsMap).forEach(([tag, tasks]) => {
+            const group = document.createElement('div');
+            group.className = 'group';
+    
+            const title = document.createElement('h3');
+            title.textContent = tag;
+    
+            const list = document.createElement('ul');
+            tasks.forEach((task) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = task.text;
+                list.appendChild(listItem);
+            });
+    
+            group.appendChild(title);
+            group.appendChild(list);
+            groupedTaskList.appendChild(group);
+        });
+    };
+    
+    // タグフィルタを更新
+    const renderTagFilters = (tags) => {
+        tagFilterContainer.innerHTML = '';
+        tags.forEach((tag) => {
+            const label = document.createElement('label');
+            label.style.marginRight = '10px';
+            label.innerHTML = `
+                <input type="checkbox" class="tag-checkbox" data-tag="${tag}" checked>
+                ${tag}
+            `;
+            tagFilterContainer.appendChild(label);
+        });
+    };
+    
+    // タスクのフィルタリング
+    const filterTasksByTags = (tasks) => {
+        const activeTags = [...document.querySelectorAll('.tag-checkbox:checked')].map(
+            (checkbox) => checkbox.dataset.tag
+        );
+    
+        const filteredTasks = {};
+        Object.entries(tasks).forEach(([id, task]) => {
+            if (!task.tags || task.tags.some((tag) => activeTags.includes(tag))) {
+                filteredTasks[id] = task;
+            }
+        });
+    
+        renderGroupedTasks(filteredTasks);
+    };
+
+    // タグフィルタのイベントリスナー
+    tagFilterContainer.addEventListener('change', () => {
+        loadTodos((tasks) => filterTasksByTags(tasks));
+    });
+    
+    // 全タグ表示・非表示の切り替え
+    allTagsToggle.addEventListener('change', (e) => {
+        const checked = e.target.checked;
+        document.querySelectorAll('.tag-checkbox').forEach((checkbox) => {
+            checkbox.checked = checked;
+        });
+        loadTodos((tasks) => filterTasksByTags(tasks));
+    });
+
+    // プロジェクトビュー表示
+    projectViewBtn.addEventListener('click', () => {
+        mainView.style.display = 'none';
+        projectView.style.display = 'block';
+    
+        loadTodos((tasks) => {
+            const tags = new Set();
+            Object.values(tasks).forEach((task) => {
+                (task.tags || ['未分類']).forEach((tag) => tags.add(tag));
+            });
+    
+            renderTagFilters([...tags]);
+            renderGroupedTasks(tasks);
+        });
+    });
+    
+    // 通常モードボタン
+    mainViewBtn.addEventListener('click', () => {
+        projectView.style.display = 'none';
+        mainView.style.display = 'block';
+    });
+    
     initializeApp();
 });
