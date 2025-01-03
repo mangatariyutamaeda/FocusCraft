@@ -9,35 +9,39 @@
 </head>
 <body>
     <h1>FocusCraft - タスク管理</h1>
-    <div class="main-container">
-        <div id="menu">
-            <button id="focus-mode-btn">フォーカスモード</button>
-            <button id="main-view-btn">通常モード</button>
+    
+    <!-- メニュー -->
+    <div id="menu" class="menu-container">
+        <button id="focus-mode-btn">フォーカスモード</button>
+        <button id="main-view-btn">通常モード</button>
+    </div>
+
+    <!-- フォーカスモード -->
+    <div id="focus-mode" style="display: none;">
+        <h2>フォーカスモード</h2>
+        <div id="focus-task" class="focus-task-container">
+            <h3 id="focus-task-title">タスク: 現在のタスクはありません</h3>
+            <textarea id="focus-task-notes" placeholder="タスクの詳細を記入してください"></textarea>
+            <label for="focus-task-goal">ゴール:</label>
+            <input type="text" id="focus-task-goal" placeholder="タスクのゴールを入力">
+            <label for="focus-task-time">予定作業時間:</label>
+            <input type="number" id="focus-task-time" placeholder="分" min="1">
         </div>
+    </div>
+
+    <!-- 通常モード -->
+    <div id="main-view">
+        <h2>通常モード</h2>
         
-        
-        <div id="focus-mode" style="display: none;">
-            <h2>フォーカスモード</h2>
-            <div id="focus-task">
-                <h3 id="focus-task-title">タスク: 現在のタスクはありません</h3>
-                <textarea id="focus-task-notes" placeholder="タスクの詳細を記入してください"></textarea>
-                <label for="focus-task-goal">ゴール:</label>
-                <input type="text" id="focus-task-goal" placeholder="タスクのゴールを入力">
-                <label for="focus-task-time">予定作業時間:</label>
-                <input type="number" id="focus-task-time" placeholder="分" min="1">
-            </div>
-        </div>
-        <div id="main-view">
-            <h2>通常モード</h2>
-        <!-- 左側の保存済みビュー -->
+        <!-- 保存済みビュー -->
         <div class="view-container">
             <h3>保存済みビュー</h3>
             <div id="view-list"></div>
         </div>
 
-        <!-- 中央のタスク管理エリア -->
+        <!-- タスク管理エリア -->
         <div class="task-container">
-            <!-- 検索ボックス -->
+            <!-- 検索機能 -->
             <div class="search-container">
                 <input type="text" id="search-box" placeholder="タスクを検索...">
             </div>
@@ -47,17 +51,21 @@
                 <button id="save-view-btn">現在のビューを保存</button>
             </div>
 
+            <!-- タスク入力エリア -->
             <div class="input-container">
                 <input type="text" id="focuscraft-input" placeholder="新しいタスクを入力">
                 <input type="text" id="tag-input" placeholder="タグをカンマで区切って入力">
                 <button id="add-btn">追加</button>
             </div>
+
+            <!-- 現在のタスク -->
             <div class="current-task-container">
                 <h3>現在実施中のタスク</h3>
-                <div id="current-task"></div>
+                <div id="current-task">なし</div>
             </div>
+
             <!-- タスクリスト -->
-            <ul id="focuscraft-list"></ul>
+            <ul id="focuscraft-list" class="task-list"></ul>
         </div>
     </div>
 </body>
