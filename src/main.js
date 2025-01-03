@@ -34,21 +34,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const taskElement = createTaskElement(task, id, {
             onComplete: (id) => updateTodoStatus(id, { completed: !task.completed }),
             onInProgress: (id) => {
-                // 現在実施中のタスクを更新
                 if (currentInProgressId) {
                     const previousTask = document.querySelector(`[data-id="${currentInProgressId}"]`);
                     if (previousTask) {
                         const btn = previousTask.querySelector('.in-progress-btn');
-                        btn.textContent = '実施中に設定';
+                        if (btn) {
+                            btn.textContent = '実施中に設定';
+                        }
                     }
                 }
                 currentInProgressId = id;
                 currentTaskElement.textContent = task.text;
-    
+            
                 const currentTask = document.querySelector(`[data-id="${id}"]`);
                 if (currentTask) {
                     const btn = currentTask.querySelector('.in-progress-btn');
-                    btn.textContent = '実施中';
+                    if (btn) {
+                        btn.textContent = '実施中';
+                    }
                 }
             },
             onDelete: (id) => {
