@@ -1,3 +1,5 @@
+import { deleteView } from './viewsManager.js';
+
 export const renderTaskList = (todoList, tasks, addTodoToList) => {
     todoList.innerHTML = '';
 
