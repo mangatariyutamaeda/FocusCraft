@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveViewBtn = document.getElementById('save-view-btn');
     const viewList = document.getElementById('view-list');
     const searchBox = document.getElementById('search-box');
+    const currentTaskElement = document.getElementById('current-task'); // 修正箇所: currentTaskElementの定義を追加
 
     let currentInProgressTask = null;
     let currentInProgressId = null;
@@ -111,9 +112,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateCurrentTaskDisplay = () => {
         if (currentInProgressTask) {
-            focusTaskTitle.textContent = currentInProgressTask.text || 'なし';
+            currentTaskElement.textContent = currentInProgressTask.text || 'なし';
         } else {
-            focusTaskTitle.textContent = 'なし';
+            currentTaskElement.textContent = 'なし';
         }
     };
 
