@@ -89,14 +89,13 @@ export const renderViewList = (viewListElement, views, onViewClick) => {
         deleteButton.textContent = '削除';
         deleteButton.style.marginLeft = '10px';
 
+        // 削除処理
         deleteButton.addEventListener('click', () => {
-            if (confirm(`ビュー「${viewName}」を削除しますか？`)) {
-                deleteView(viewName).then(() => {
-                    loadViews((updatedViews) => {
-                        renderViewList(viewListElement, updatedViews, onViewClick);
-                    });
+            deleteView(viewName).then(() => {
+                loadViews((updatedViews) => {
+                    renderViewList(viewListElement, updatedViews, onViewClick);
                 });
-            }
+            });
         });
 
         viewContainer.appendChild(viewButton);
