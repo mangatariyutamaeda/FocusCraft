@@ -111,26 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-
-    const renderViewList = (viewListElement, views, onViewClick) => {
-        viewListElement.innerHTML = ''; // リストをリセット
-    
-        for (const viewName in views) {
-            const viewButton = document.createElement('button');
-            viewButton.textContent = viewName;
-    
-            // ビューをクリックしたときの動作
-            viewButton.addEventListener('click', () => {
-                const viewData = views[viewName];
-                if (viewData && viewData.searchQuery) {
-                    searchBox.value = viewData.searchQuery; // 検索ボックスに反映
-                    filterTasks(viewData.searchQuery);     // 検索条件で絞り込み
-                }
-            });
-    
-            viewListElement.appendChild(viewButton);
-        }
-    };
     
     // イベントリスナーを設定
     searchBox.addEventListener('input', (event) => {
