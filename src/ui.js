@@ -29,14 +29,21 @@ export const createTaskElement = (task, id, handlers) => {
 
     const li = document.createElement('div');
     li.classList.add('task-item');
-    li.setAttribute('data-id', id); // タスクの要素にIDを設定
+    li.setAttribute('data-id', id);
 
     const taskName = document.createElement('span');
-    taskName.style.flex = '2';
     taskName.textContent = task.text;
 
-    if (task.completed) {
-        taskName.style.textDecoration = 'line-through';
+    const tagContainer = document.createElement('div');
+    tagContainer.classList.add('tag-container');
+    if (task.tags) {
+        task.tags.forEach((tag) => {
+            const tagElement = document.createElement('button');
+            tagElement.textContent = tag;
+            tagElement.classList.add('tag');
+            tagElement.addEventListener('click', () => filterTasksByTag(tag));
+            tagContainer.appendChild(tagElement);
+        });
     }
 
     const completeBtn = document.createElement('button');
@@ -44,7 +51,6 @@ export const createTaskElement = (task, id, handlers) => {
     completeBtn.addEventListener('click', () => onComplete(id));
 
     const inProgressBtn = document.createElement('button');
-    inProgressBtn.classList.add('in-progress-btn');
     inProgressBtn.textContent = '実施中に設定';
     inProgressBtn.addEventListener('click', () => onInProgress(id));
 
@@ -53,6 +59,7 @@ export const createTaskElement = (task, id, handlers) => {
     deleteBtn.addEventListener('click', () => onDelete(id));
 
     li.appendChild(taskName);
+    li.appendChild(tagContainer);
     li.appendChild(completeBtn);
     li.appendChild(inProgressBtn);
     li.appendChild(deleteBtn);
@@ -60,6 +67,18 @@ export const createTaskElement = (task, id, handlers) => {
     return li;
 };
 
+export const filterTasksByTag = (tag) => {
+    const tasks = [...document.querySelectorAll('.task-item')];
+    tasks.forEach((task) => {
+        const tags = task.querySelectorAll('.tag');
+        const tagTexts = [...tags].map((t) => t.textContent);
+        if (tagTexts.includes(tag)) {
+            task.style.display = 'flex'; // 表示
+        } else {
+            task.style.display = 'none'; // 非表示
+        }
+    });
+};
 export const renderViewList = (viewListElement, views, onViewClick) => {
     viewListElement.innerHTML = ''; // リストをリセット
 
