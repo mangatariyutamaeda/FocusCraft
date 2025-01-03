@@ -10,6 +10,25 @@
 <body>
     <h1>FocusCraft - タスク管理</h1>
     <div class="main-container">
+        <div id="menu">
+            <button id="focus-mode-btn">フォーカスモード</button>
+            <button id="main-view-btn">通常モード</button>
+        </div>
+        
+        
+        <div id="focus-mode" style="display: none;">
+            <h2>フォーカスモード</h2>
+            <div id="focus-task">
+                <h3 id="focus-task-title">タスク: 現在のタスクはありません</h3>
+                <textarea id="focus-task-notes" placeholder="タスクの詳細を記入してください"></textarea>
+                <label for="focus-task-goal">ゴール:</label>
+                <input type="text" id="focus-task-goal" placeholder="タスクのゴールを入力">
+                <label for="focus-task-time">予定作業時間:</label>
+                <input type="number" id="focus-task-time" placeholder="分" min="1">
+            </div>
+        </div>
+        <div id="main-view">
+            <h2>通常モード</h2>
         <!-- 左側の保存済みビュー -->
         <div class="view-container">
             <h3>保存済みビュー</h3>
