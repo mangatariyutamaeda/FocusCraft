@@ -62,9 +62,17 @@ export const createTaskElement = (task, id, handlers) => {
 
 
 export const renderViewList = (viewListElement, views, onViewClick) => {
+    console.log('Received views:', views); // ここでビューの状態を確認
     viewListElement.innerHTML = ''; // リストをリセット
 
+    if (!views || typeof views !== 'object') {
+        console.error('Invalid views data:', views); // デバッグ: 無効なデータ
+        return;
+    }
+
     for (const viewName in views) {
+        console.log(`Processing view: ${viewName}`); // ここでビュー名を確認
+
         const viewContainer = document.createElement('div');
         viewContainer.style.display = 'flex';
         viewContainer.style.justifyContent = 'space-between';
@@ -85,7 +93,7 @@ export const renderViewList = (viewListElement, views, onViewClick) => {
         deleteButton.textContent = '削除';
         deleteButton.style.marginLeft = '10px';
 
-        console.log('Generated delete button:', deleteButton); // デバッグログ
+        console.log('Generated delete button:', deleteButton); // ここで削除ボタンの生成確認
 
         deleteButton.addEventListener('click', () => {
             if (confirm(`ビュー「${viewName}」を削除しますか？`)) {
@@ -100,5 +108,7 @@ export const renderViewList = (viewListElement, views, onViewClick) => {
         viewContainer.appendChild(viewButton);
         viewContainer.appendChild(deleteButton);
         viewListElement.appendChild(viewContainer);
+
+        console.log('Added view container:', viewContainer); // コンテナが追加されているか確認
     }
 };
