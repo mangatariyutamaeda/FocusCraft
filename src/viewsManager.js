@@ -18,3 +18,7 @@ export const loadViews = (callback) => {
     });
 };
 
+// ビューを削除する関数
+export const deleteView = (viewName) => {
+    return remove(ref(database, `views/${viewName}`));
+};
