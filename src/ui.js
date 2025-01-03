@@ -24,7 +24,6 @@ export const renderTaskList = (todoList, tasks, addTodoToList) => {
     }
 };
 
-
 export const createTaskElement = (task, id, handlers) => {
     const { onComplete, onInProgress, onDelete } = handlers;
 
@@ -61,10 +60,7 @@ export const createTaskElement = (task, id, handlers) => {
     return li;
 };
 
-
-
 export const renderViewList = (viewListElement, views, onViewClick) => {
-    console.log('Received views:', views); // ここでビューの状態を確認
     viewListElement.innerHTML = ''; // リストをリセット
 
     if (!views || typeof views !== 'object') {
@@ -73,8 +69,6 @@ export const renderViewList = (viewListElement, views, onViewClick) => {
     }
 
     for (const viewName in views) {
-        console.log(`Processing view: ${viewName}`); // ここでビュー名を確認
-
         const viewContainer = document.createElement('div');
         viewContainer.style.display = 'flex';
         viewContainer.style.justifyContent = 'space-between';
@@ -95,8 +89,6 @@ export const renderViewList = (viewListElement, views, onViewClick) => {
         deleteButton.textContent = '削除';
         deleteButton.style.marginLeft = '10px';
 
-        console.log('Generated delete button:', deleteButton); // ここで削除ボタンの生成確認
-
         deleteButton.addEventListener('click', () => {
             if (confirm(`ビュー「${viewName}」を削除しますか？`)) {
                 deleteView(viewName).then(() => {
@@ -110,7 +102,5 @@ export const renderViewList = (viewListElement, views, onViewClick) => {
         viewContainer.appendChild(viewButton);
         viewContainer.appendChild(deleteButton);
         viewListElement.appendChild(viewContainer);
-
-        console.log('Added view container:', viewContainer); // コンテナが追加されているか確認
     }
 };
