@@ -16,16 +16,22 @@
         <button id="main-view-btn">通常モード</button>
     </div>
 
-    <!-- フォーカスモード -->
     <div id="focus-mode" style="display: none;">
         <h2>フォーカスモード</h2>
-        <div id="focus-task" class="focus-task-container">
+        <div id="focus-task">
             <h3 id="focus-task-title">タスク: 現在のタスクはありません</h3>
             <textarea id="focus-task-notes" placeholder="タスクの詳細を記入してください"></textarea>
             <label for="focus-task-goal">ゴール:</label>
             <input type="text" id="focus-task-goal" placeholder="タスクのゴールを入力">
             <label for="focus-task-time">予定作業時間:</label>
             <input type="number" id="focus-task-time" placeholder="分" min="1">
+            <p id="focus-task-tags">タグ: なし</p>
+            <p id="focus-task-start-time">開始時刻: なし</p>
+            <p id="focus-task-end-time">終了時刻: なし</p>
+            <p id="focus-task-duration">経過時間: -</p>
+            <button id="focus-task-start-btn">開始</button>
+            <button id="focus-task-end-btn">終了</button>
+            <button id="focus-task-complete-btn">完了</button>
         </div>
     </div>
 
