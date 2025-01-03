@@ -123,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             onComplete: (id) => updateTodoStatus(id, { completed: !task.completed }),
             onInProgress: (id) => {
                 if (currentInProgressId) {
+                    // 以前のタスクをリセット
                     const previousTask = document.querySelector(`[data-id="${currentInProgressId}"]`);
                     if (previousTask) {
                         const btn = previousTask.querySelector('.in-progress-btn');
@@ -131,10 +132,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
                 }
-
+    
+                // 現在のタスクを更新
                 currentInProgressId = id;
                 currentInProgressTask = task;
-
+    
                 const currentTask = document.querySelector(`[data-id="${id}"]`);
                 if (currentTask) {
                     const btn = currentTask.querySelector('.in-progress-btn');
@@ -142,22 +144,28 @@ document.addEventListener('DOMContentLoaded', () => {
                         btn.textContent = '実施中';
                     }
                 }
-
-                updateCurrentTaskDisplay();
+    
+                // 「現在実施中のタスク」欄にタスクを反映
+                if (currentTaskElement) {
+                    currentTaskElement.textContent = task.text || '現在のタスクはありません';
+                }
             },
             onDelete: (id) => {
                 if (id === currentInProgressId) {
                     currentInProgressId = null;
                     currentInProgressTask = null;
-                    updateCurrentTaskDisplay();
+                    if (currentTaskElement) {
+                        currentTaskElement.textContent = '現在のタスクはありません';
+                    }
                 }
                 deleteTodo(id);
             },
         });
-
+    
         taskElement.setAttribute('data-id', id);
         todoList.appendChild(taskElement);
     };
+
 
     addBtn.addEventListener('click', () => {
         const todoText = todoInput.value.trim();
