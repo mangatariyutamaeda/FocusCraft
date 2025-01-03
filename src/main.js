@@ -3,30 +3,79 @@ import { saveView, loadViews } from './viewsManager.js';
 import { renderTaskList, createTaskElement, renderViewList } from './ui.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const todoInput = document.getElementById('focuscraft-input');
-    const tagInput = document.getElementById('tag-input'); // タグ入力フィールドを取得
-    const addBtn = document.getElementById('add-btn');
-    const todoList = document.getElementById('focuscraft-list');
-    const saveViewBtn = document.getElementById('save-view-btn');
-    const viewList = document.getElementById('view-list');
-    const searchBox = document.getElementById('search-box');
+    const focusModeBtn = document.getElementById('focus-mode-btn');
+    const mainViewBtn = document.getElementById('main-view-btn');
+    const mainView = document.getElementById('main-view');
+    const focusMode = document.getElementById('focus-mode');
+    const focusTaskTitle = document.getElementById('focus-task-title');
+    const focusTaskNotes = document.getElementById('focus-task-notes');
+    const focusTaskGoal = document.getElementById('focus-task-goal');
+    const focusTaskTime = document.getElementById('focus-task-time');
 
-    let currentInProgressId = null;
+    let currentInProgressTask = null;
 
-    const initializeApp = () => {
-        // タスクをロードしてリストに表示
-        loadTodos((todos) => {
-            renderTaskList(todoList, todos, addTodoToList);
-        });
+    // フォーカスモードボタンのイベントリスナー
+    focusModeBtn.addEventListener('click', () => {
+        mainView.style.display = 'none';
+        focusMode.style.display = 'block';
 
-        // 保存されたビューをロードして左側に表示
-        loadViews((views) => {
-            renderViewList(viewList, views, searchBox, (tasks) => {
-                todoList.innerHTML = ''; // 現在のタスクリストをリセット
-                tasks.forEach((task) => addTodoToList(task.id, task));
-            });
-        });
+        if (currentInProgressTask) {
+            focusTaskTitle.textContent = `タスク: ${currentInProgressTask.text}`;
+            focusTaskNotes.value = currentInProgressTask.notes || '';
+            focusTaskGoal.value = currentInProgressTask.goal || '';
+            focusTaskTime.value = currentInProgressTask.time || '';
+        } else {
+            focusTaskTitle.textContent = 'タスク: 現在のタスクはありません';
+            focusTaskNotes.value = '';
+            focusTaskGoal.value = '';
+            focusTaskTime.value = '';
+        }
+    });
+
+    // 通常モードボタンのイベントリスナー
+    mainViewBtn.addEventListener('click', () => {
+        focusMode.style.display = 'none';
+        mainView.style.display = 'block';
+    });
+
+    // タスクを実施中に設定したときの動作を修正
+    const updateFocusTask = (id, task) => {
+        currentInProgressTask = { ...task, id };
     };
+
+    // 既存の onInProgress を修正
+    const onInProgress = (id, task) => {
+        if (currentInProgressId) {
+            const previousTask = document.querySelector(`[data-id="${currentInProgressId}"]`);
+            if (previousTask) {
+                const btn = previousTask.querySelector('.in-progress-btn');
+                if (btn) {
+                    btn.textContent = '実施中に設定';
+                }
+            }
+        }
+        currentInProgressId = id;
+        updateFocusTask(id, task);
+
+        const currentTask = document.querySelector(`[data-id="${id}"]`);
+        if (currentTask) {
+            const btn = currentTask.querySelector('.in-progress-btn');
+            if (btn) {
+                btn.textContent = '実施中';
+            }
+        }
+    };
+
+    // 既存の addTodoToList を修正して onInProgress を適用
+    const addTodoToList = (id, task) => {
+        const taskElement = createTaskElement(task, id, {
+            onComplete: (id) => updateTodoStatus(id, { completed: !task.completed }),
+            onInProgress: (id) => onInProgress(id, task),
+            onDelete: (id) => deleteTodo(id),
+        });
+        todoList.appendChild(taskElement);
+    };
+});
 
     const currentTaskElement = document.getElementById('current-task');
 
