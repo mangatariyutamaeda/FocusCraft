@@ -4,6 +4,7 @@ import { renderTaskList, createTaskElement, renderViewList } from './ui.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const todoInput = document.getElementById('focuscraft-input');
+    const tagInput = document.getElementById('tag-input'); // タグ入力フィールドを取得
     const addBtn = document.getElementById('add-btn');
     const todoList = document.getElementById('focuscraft-list');
     const saveViewBtn = document.getElementById('save-view-btn');
