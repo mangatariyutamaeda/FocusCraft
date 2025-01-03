@@ -20,12 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 保存されたビューをロードして左側に表示
         loadViews((views) => {
-            renderViewList(viewList, views, (tasks) => {
-                // ビューがクリックされたときの動作
+            renderViewList(viewList, views, searchBox, (tasks) => {
                 todoList.innerHTML = ''; // 現在のタスクリストをリセット
                 tasks.forEach((task) => addTodoToList(task.id, task));
             });
-        });
+        });        
     };
 
     const currentTaskElement = document.getElementById('current-task');
