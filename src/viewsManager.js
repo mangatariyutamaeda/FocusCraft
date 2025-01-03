@@ -14,7 +14,7 @@ export const loadViews = (callback) => {
 
     const viewsRef = ref(database, 'views');
     onValue(viewsRef, (snapshot) => {
-        const views = snapshot.val();
+        const views = snapshot.val() || {}; // データが null の場合は空オブジェクトを返す
         callback(views);
     }, (error) => {
         console.error('Error fetching views:', error);
