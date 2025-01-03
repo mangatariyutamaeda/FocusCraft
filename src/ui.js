@@ -63,10 +63,39 @@ export const createTaskElement = (task, id, handlers) => {
 
 export const renderViewList = (viewListElement, views, onViewClick) => {
     viewListElement.innerHTML = ''; // リストをリセット
+
     for (const viewName in views) {
+        const viewContainer = document.createElement('div');
+        viewContainer.style.display = 'flex';
+        viewContainer.style.justifyContent = 'space-between';
+        viewContainer.style.alignItems = 'center';
+        viewContainer.style.marginBottom = '10px';
+
         const viewButton = document.createElement('button');
-        viewButton.textContent = viewName; // ビュー名を表示
-        viewButton.addEventListener('click', () => onViewClick(views[viewName]));
-        viewListElement.appendChild(viewButton);
+        viewButton.textContent = viewName;
+        viewButton.addEventListener('click', () => {
+            const viewData = views[viewName];
+            if (viewData && viewData.searchQuery) {
+                searchBox.value = viewData.searchQuery; // 検索ボックスに反映
+                filterTasks(viewData.searchQuery);     // 検索条件で絞り込み
+            }
+        });
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '削除';
+        deleteButton.style.marginLeft = '10px';
+        deleteButton.addEventListener('click', () => {
+            if (confirm(`ビュー「${viewName}」を削除しますか？`)) {
+                deleteView(viewName).then(() => {
+                    loadViews((updatedViews) => {
+                        renderViewList(viewListElement, updatedViews, onViewClick);
+                    });
+                });
+            }
+        });
+
+        viewContainer.appendChild(viewButton);
+        viewContainer.appendChild(deleteButton);
+        viewListElement.appendChild(viewContainer);
     }
 };
