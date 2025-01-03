@@ -12,9 +12,12 @@ export const loadViews = (callback) => {
         return;
     }
 
-    onValue(ref(database, 'views'), (snapshot) => {
+    const viewsRef = ref(database, 'views');
+    onValue(viewsRef, (snapshot) => {
         const views = snapshot.val();
         callback(views);
+    }, (error) => {
+        console.error('Error fetching views:', error);
     });
 };
 
