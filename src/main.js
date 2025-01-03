@@ -3,36 +3,87 @@ import { saveView, loadViews } from './viewsManager.js';
 import { renderTaskList, createTaskElement, renderViewList } from './ui.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const todoInput = document.getElementById('focuscraft-input');
-    const tagInput = document.getElementById('tag-input');
-    const addBtn = document.getElementById('add-btn');
-    const todoList = document.getElementById('focuscraft-list');
-    const saveViewBtn = document.getElementById('save-view-btn');
-    const viewList = document.getElementById('view-list');
-    const searchBox = document.getElementById('search-box');
-    const currentTaskElement = document.getElementById('current-task');
     const focusModeBtn = document.getElementById('focus-mode-btn');
     const mainViewBtn = document.getElementById('main-view-btn');
     const mainView = document.getElementById('main-view');
     const focusMode = document.getElementById('focus-mode');
+    const focusTaskTitle = document.getElementById('focus-task-title');
+    const focusTaskNotes = document.getElementById('focus-task-notes');
+    const focusTaskGoal = document.getElementById('focus-task-goal');
+    const focusTaskTime = document.getElementById('focus-task-time');
+    const focusTaskTags = document.getElementById('focus-task-tags');
+    const focusTaskStartTime = document.getElementById('focus-task-start-time');
+    const focusTaskEndTime = document.getElementById('focus-task-end-time');
+    const focusTaskDuration = document.getElementById('focus-task-duration');
+    const startBtn = document.getElementById('focus-task-start-btn');
+    const endBtn = document.getElementById('focus-task-end-btn');
+    const completeBtn = document.getElementById('focus-task-complete-btn');
 
-    let currentInProgressId = null;
     let currentInProgressTask = null;
+    let startTime = null;
 
-    const initializeApp = () => {
-        // タスクをロードしてリストに表示
-        loadTodos((todos) => {
-            renderTaskList(todoList, todos, addTodoToList);
-        });
+    const switchToFocusMode = () => {
+        mainView.style.display = 'none';
+        focusMode.style.display = 'block';
 
-        // 保存されたビューをロードして左側に表示
-        loadViews((views) => {
-            renderViewList(viewList, views, searchBox, (tasks) => {
-                todoList.innerHTML = '';
-                tasks.forEach((task) => addTodoToList(task.id, task));
-            });
-        });
+        if (currentInProgressTask) {
+            focusTaskTitle.textContent = `タスク: ${currentInProgressTask.text}`;
+            focusTaskNotes.value = currentInProgressTask.notes || '';
+            focusTaskGoal.value = currentInProgressTask.goal || '';
+            focusTaskTime.value = currentInProgressTask.time || '';
+            focusTaskTags.textContent = `タグ: ${currentInProgressTask.tags ? currentInProgressTask.tags.join(', ') : 'なし'}`;
+        } else {
+            focusTaskTitle.textContent = 'タスク: 現在のタスクはありません';
+            focusTaskNotes.value = '';
+            focusTaskGoal.value = '';
+            focusTaskTime.value = '';
+            focusTaskTags.textContent = 'タグ: なし';
+        }
+
+        focusTaskStartTime.textContent = '開始時刻: なし';
+        focusTaskEndTime.textContent = '終了時刻: なし';
+        focusTaskDuration.textContent = '経過時間: -';
     };
+
+    const switchToMainView = () => {
+        focusMode.style.display = 'none';
+        mainView.style.display = 'block';
+    };
+
+    // フォーカスモードボタンのイベントリスナー
+    focusModeBtn.addEventListener('click', switchToFocusMode);
+
+    // 通常モードボタンのイベントリスナー
+    mainViewBtn.addEventListener('click', switchToMainView);
+
+    // 完了ボタンの動作
+    completeBtn.addEventListener('click', () => {
+        if (currentInProgressTask) {
+            updateTodoStatus(currentInProgressTask.id, { completed: true });
+            alert('タスクを完了しました！');
+            switchToMainView();
+        }
+    });
+
+    // 開始ボタンの動作
+    startBtn.addEventListener('click', () => {
+        if (currentInProgressTask) {
+            startTime = new Date();
+            focusTaskStartTime.textContent = `開始時刻: ${startTime.toLocaleString()}`;
+            alert('タスクを開始しました！');
+        }
+    });
+
+    // 終了ボタンの動作
+    endBtn.addEventListener('click', () => {
+        if (currentInProgressTask && startTime) {
+            const endTime = new Date();
+            focusTaskEndTime.textContent = `終了時刻: ${endTime.toLocaleString()}`;
+            const duration = Math.round((endTime - startTime) / (1000 * 60)); // 経過時間を分で計算
+            focusTaskDuration.textContent = `経過時間: ${duration} 分`;
+            alert('タスクを終了しました！');
+        }
+    });
 
     const updateCurrentTaskDisplay = () => {
         if (currentInProgressTask) {
