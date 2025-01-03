@@ -41,7 +41,7 @@ export const createTaskElement = (task, id, handlers) => {
             const tagElement = document.createElement('button');
             tagElement.textContent = tag;
             tagElement.classList.add('tag');
-            tagElement.addEventListener('click', () => filterTasksByTag(tag));
+            tagElement.addEventListener('click', () => filterTasksByTag(tag)); // 修正済み関数を使用
             tagContainer.appendChild(tagElement);
         });
     }
