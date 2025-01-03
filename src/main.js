@@ -11,9 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewList = document.getElementById('view-list');
     const searchBox = document.getElementById('search-box');
     const currentTaskElement = document.getElementById('current-task');
+    const focusModeBtn = document.getElementById('focus-mode-btn');
+    const mainViewBtn = document.getElementById('main-view-btn');
+    const mainView = document.getElementById('main-view');
+    const focusMode = document.getElementById('focus-mode');
 
-    let currentInProgressId = null; // 実施中のタスクID
-    let currentInProgressTask = null; // 実施中のタスクデータ
+    let currentInProgressId = null;
+    let currentInProgressTask = null;
 
     const initializeApp = () => {
         // タスクをロードしてリストに表示
@@ -79,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
         });
 
-        taskElement.setAttribute('data-id', id); // タスクの要素にIDを設定
+        taskElement.setAttribute('data-id', id);
         todoList.appendChild(taskElement);
     };
 
@@ -123,6 +127,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // アプリを初期化
+    // フォーカスモード切り替え
+    focusModeBtn.addEventListener('click', () => {
+        mainView.style.display = 'none';
+        focusMode.style.display = 'block';
+
+        if (currentInProgressTask) {
+            document.getElementById('focus-task-title').textContent = `タスク: ${currentInProgressTask.text}`;
+        }
+    });
+
+    mainViewBtn.addEventListener('click', () => {
+        focusMode.style.display = 'none';
+        mainView.style.display = 'block';
+    });
+
     initializeApp();
 });
