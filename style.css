@@ -102,3 +102,24 @@ li button {
     text-align: center;
     color: #333;
 }
+
+
+#tag-filter-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+#grouped-task-list {
+    margin-top: 20px;
+}
+
+.group {
+    margin-bottom: 20px;
+}
+
+.group h3 {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
